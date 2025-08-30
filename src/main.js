@@ -3,6 +3,7 @@ import path from 'node:path';
 import started from 'electron-squirrel-startup';
 import { ipcMain } from 'electron/main';
 import conectBD from './conectBD/conectBD.js';
+
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (started) {
   app.quit();
@@ -32,8 +33,8 @@ const createWindow = () => {
 
 ipcMain.handle("checkLogin", async (event, user, password) => {
   try {
-    const userData = await conectBD.checkLogin(user, password);
-    return userData; // lo recibe el renderer
+    const result = await conectBD.checkLogin(user, password);
+    return result; // esto irá al renderer
   } catch (err) {
     console.error(err);
     return null;
