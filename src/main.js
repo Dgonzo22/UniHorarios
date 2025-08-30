@@ -30,8 +30,14 @@ const createWindow = () => {
   mainWindow.webContents.openDevTools();
 };
 
-ipcMain.handle("checkLogin", async (user, password) => {
-  console.log("sssssssss")
+ipcMain.handle("checkLogin", async (event, user, password) => {
+  try {
+    const userData = await conectBD.checkLogin(user, password);
+    return userData; // lo recibe el renderer
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
 });
 
 

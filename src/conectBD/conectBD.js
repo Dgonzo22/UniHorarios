@@ -18,11 +18,11 @@ db.serialize(() => {
 });
 
 function checkLogin(user, password) {
-  const query = `SELECT * FROM Users WHERE user = ? AND password = ?`;
   return new Promise((resolve, reject) => {
+    const query = `SELECT * FROM Users WHERE user = ? AND password = ?`;
     db.get(query, [user, password], (err, row) => {
-      if(err) reject(err);
-      else resolve(row); // devuelve null si no existe
+      if (err) reject(err);
+      else resolve(row); // row será null si no encuentra usuario
     });
   });
 }
