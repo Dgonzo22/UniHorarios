@@ -8,10 +8,13 @@
           <button @click="$router.push('/docentes')">👨‍🏫 Docentes</button>
           <button @click="$router.push('/horarios')">📅 Horarios</button>
           <button @click="$router.push('/materias')">📝 Materias</button>
+          <button @click="$router.push('/VistaDeHorario')">⌛ Vista de Horario</button>
         </aside>
 
         <!-- Vista dinámica -->
         <main class="views">
+
+          
           <router-view />
         </main>
       </div>
