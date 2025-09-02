@@ -136,26 +136,22 @@ export default {
         { id: 4, inicio: "11:30", fin: "13:00" },
         { id: 5, inicio: "14:00", fin: "15:30" },
         { id: 6, inicio: "15:30", fin: "17:00" },
-        { id: 7, inicio: "17:00", fin: "18:30" },
-        { id: 8, inicio: "18:30", fin: "20:00" },
+        { id: 7, inicio: "18:15", fin: "19:45" },
+        { id: 8, inicio: "19:45", fin: "21:15" },
       ],
 
     
       bloques: [
-        // Semestre 1
-        { id: 1, dia: "Lunes", materia: "Matemáticas I", docente: "MSc. Laura Díaz", grupo: "Grupo A", semestre: 1, horaInicio: "07:00", horaFin: "08:30" },
-        { id: 2, dia: "Lunes", materia: "Programación I", docente: "Ing. David Ríos", grupo: "Grupo A", semestre: 1,  horaInicio: "08:30", horaFin: "10:00" },
-        { id: 3, dia: "Miércoles", materia: "Algoritmos", docente: "Ing. Sofía Pérez", grupo: "Grupo A", semestre: 1,  horaInicio: "10:00", horaFin: "11:30" },
-        { id: 4, dia: "Viernes", materia: "Inglés Técnico I", docente: "Lic. Camilo Rey", grupo: "Grupo A", semestre: 1,  horaInicio: "14:00", horaFin: "15:30" },
-
-        // Semestre 2
-        { id: 5, dia: "Martes", materia: "Cálculo II", docente: "PhD. Esteban Mora", grupo: "Grupo B", semestre: 2,  horaInicio: "07:00", horaFin: "08:30" },
-        { id: 6, dia: "Jueves", materia: "Bases de Datos I", docente: "Ing. Valentina León", grupo: "Grupo B", semestre: 2,  horaInicio: "10:00", horaFin: "11:30" },
-        { id: 7, dia: "Viernes", materia: "Estructuras de Datos", docente: "Ing. Fabián Rocha", grupo: "Grupo B", semestre: 2, horaInicio: "15:30", horaFin: "17:00" },
-
-        // Semestre 3
-        { id: 8, dia: "Martes", materia: "Sistemas Operativos", docente: "MSc. Natalia Cruz", grupo: "Grupo A", semestre: 3,  horaInicio: "11:30", horaFin: "13:00" },
-        { id: 9, dia: "Jueves", materia: "Redes I", docente: "Ing. Julián Rivas", grupo: "Grupo A", semestre: 3,  horaInicio: "14:00", horaFin: "15:30" },
+        // Semestre 10
+        { id: 1, dia: "Lunes", materia: "Gestión de Proyectos", docente: "Juan  Herrera", grupo: "Grupo A", semestre: 10, horaInicio: "19:45", horaFin: "21:15" },
+        { id: 2, dia: "Martes", materia: "Electiva Cp3", docente: "Nieto Olaya", grupo: "Grupo A", semestre: 10,  horaInicio: "18:15", horaFin: "19:45" },
+        { id: 3, dia: "Martes", materia: "Electiva Cp3", docente: "Nieto Olaya", grupo: "Grupo A", semestre: 10,  horaInicio: "19:45", horaFin: "21:15" },
+        { id: 4, dia: "Miércoles", materia: "Gestión de Proyectos", docente: "Juan  Herrera", grupo: "Grupo A", semestre: 10,  horaInicio: "18:15", horaFin: "19:45" },
+        { id: 5, dia: "Jueves", materia: "Sistermas Distribuidos", docente: "Julian Diaz", grupo: "Grupo A", semestre: 10,  horaInicio: "18:15", horaFin: "19:45" },
+        { id: 6, dia: "Jueves", materia: "Calidad de Software", docente: "Julian Diaz", grupo: "Grupo A", semestre: 10,  horaInicio: "19:45", horaFin: "21:15" },
+        { id: 7, dia: "Viernes", materia: "Sistermas Distribuidos", docente: "Julian Diaz", grupo: "Grupo A", semestre: 10,  horaInicio: "18:15", horaFin: "19:45" },
+        { id: 8, dia: "Viernes", materia: "Calidad de Software", docente: "Julian Diaz", grupo: "Grupo A", semestre: 10,  horaInicio: "19:45", horaFin: "21:15" },
+    
       ],
     };
   },
