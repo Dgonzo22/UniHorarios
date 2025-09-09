@@ -57,8 +57,41 @@ ipcMain.handle("insertMateria",async(event, nombre,NRC,creditos)=> {
     console.log(error);
     return null
   }
+});
+ipcMain.handle("deleteMateria", async(event, idMateria) => {
+  try {
+    const result = await conectBD.deleteMateria(idMateria)
+  }catch(error){
+    console.log(error);
+    return null
+  }
 })
-
+ipcMain.handle("getDocentes",async(event) => {
+  try {
+    const result = await conectBD.getDocentes();
+    return result
+  }catch(error){
+    console.log(error);
+    return null
+  }
+})
+ipcMain.handle("insertDocente",async(event, nombre, correo, celular, perfil)=> {
+  try {
+    const result = await conectBD.insertDocente(nombre, correo, celular, perfil);
+    return result
+  }catch(error){
+    console.log(error);
+    return null
+  }
+})
+ipcMain.handle("deleteDocente", async(event, idDocente) => {
+  try {
+    const result = await conectBD.deleteDocente(idDocente)
+  }catch(error){
+    console.log(error);
+    return null
+  }
+})
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.

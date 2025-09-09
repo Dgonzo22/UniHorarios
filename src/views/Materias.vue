@@ -39,7 +39,7 @@
             <td>{{ materia.Creditos }}</td>
             <td class="acciones">
               <button class="btn editar" @click="editarMateria(index)">✏️ Editar</button>
-              <button class="btn eliminar" @click="eliminarMateria(index)">🗑️ Eliminar</button>
+              <button class="btn eliminar" @click="eliminarMateria(materia.idMateria)">🗑️ Eliminar</button>
             </td>
           </tr>
           <tr v-if="materias.length === 0">
@@ -88,15 +88,9 @@ export default {
       this.nuevaMateria = { ...this.materias[index] };
       this.editandoIndex = index;
     },
-    eliminarMateria(index) {
-      if (confirm("¿Estás seguro de que quieres eliminar esta materia?")) {
-        this.materias.splice(index, 1);
-        // Si estábamos editando y eliminamos, resetear el formulario
-        if (this.editandoIndex === index) {
-          this.editandoIndex = null;
-          this.nuevaMateria = { nombre: "", nrc: "", creditos: "" };
-        }
-      }
+     async eliminarMateria(idMateria) {
+       await window.electronAPI.invoke("deleteMateria",idMateria)
+        this.cargarMaterias()
     }
   }
 };

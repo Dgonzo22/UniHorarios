@@ -3,15 +3,15 @@
     <h2 class="titulo">👨‍🏫 Gestión de Docentes</h2>
 
     <!-- Formulario -->
-    <form @submit.prevent="agregarDocente" class="form">
+    <form @submit.prevent="" class="form">
       <div class="form-grid">
         <input v-model="nuevoDocente.nombre" placeholder="Nombre completo" required />
         <input v-model="nuevoDocente.correo" type="email" placeholder="Correo institucional" required />
         <input v-model="nuevoDocente.celular" placeholder="Celular" required />
         <input v-model="nuevoDocente.perfil" placeholder="Perfil académico" required />
       </div>
-      <button type="submit" class="btn-agregar">
-        {{ editando !== null ? "Actualizar Docente" : "➕ Agregar Docente" }}
+      <button type="submit" class="btn-agregar" @click="agregarDocente()">
+       ➕ Agregar Docente
       </button>
     </form>
 
@@ -37,7 +37,7 @@
             <td>{{ docente.perfil }}</td>
             <td class="acciones">
               <button class="btn editar" @click="editarDocente(index)">✏️ Editar</button>
-              <button class="btn eliminar" @click="eliminarDocente(index)">🗑️ Eliminar</button>
+              <button class="btn eliminar" @click="eliminarDocente(docente.idDocente)">🗑️ Eliminar</button>
             </td>
           </tr>
           <tr v-if="docentes.length === 0">
@@ -56,26 +56,32 @@ export default {
     return {
       docentes: [],
       nuevoDocente: { nombre: "", correo: "", celular: "", perfil: "" },
-      editando: null,
+      openNewDocente: false,
+      editandoIndex:null
     };
   },
+async created(){
+    const result = await window.electronAPI.invoke("getDocentes");
+    this.docentes = result
+  },
   methods: {
-    agregarDocente() {
-      if (this.editando !== null) {
-        this.docentes[this.editando] = { ...this.nuevoDocente };
-        this.editando = null;
-      } else {
-        this.docentes.push({ ...this.nuevoDocente });
-      }
-      this.nuevoDocente = { nombre: "", correo: "", celular: "", perfil: "" };
+    async agregarDocente() {
+      await window.electronAPI.invoke("insertDocente",this.nuevoDocente.nombre,this.nuevoDocente.correo,this.nuevoDocente.celular,this.nuevoDocente.perfil);
+      this.cargarDocentes()
+      this.openNewDocente =false
+    },
+    async cargarDocentes(){
+      const result = await window.electronAPI.invoke ("getDocentes")
+      this.docentes = result
     },
     editarDocente(index) {
       this.nuevoDocente = { ...this.docentes[index] };
       this.editando = index;
     },
-    eliminarDocente(index) {
-      this.docentes.splice(index, 1);
-    },
+    async eliminarDocente(idDocente) {
+     await window.electronAPI.invoke("deleteDocente",idDocente);
+     this.cargarDocentes()
+    }
   },
 };
 </script>
