@@ -95,14 +95,7 @@ ipcMain.handle("deleteDocente", async(event, idDocente) => {
 
 
 
-ipcMain.handle("deleteMateria", async(event, idMateria) => {
-  try {
-    const result = await conectBD.deleteMateria(idMateria)
-  }catch(error){
-    console.log(error);
-    return null
-  }
-})
+
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
