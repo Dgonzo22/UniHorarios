@@ -55,9 +55,24 @@ function insertMateria(nombre, NRC, Creditos){
     });
   })
 }
+function deleteMateria(idMateria){
+  return new Promise((resolve, reject)=> {
+    const query = "DELETE FROM Materias WHERE Materias.idMateria = ?"
+    db.run(query, [idMateria], function (err){
+      if (err){
+        reject(err)
+      }else{
+        resolve({ changes: this.changes }); 
+      }
+    })
+
+  })
+}
+
 ////
 export default {
   checkLogin,
   getMaterias,
-  insertMateria
+  insertMateria,
+  deleteMateria
 };

@@ -59,6 +59,14 @@ ipcMain.handle("insertMateria",async(event, nombre,NRC,creditos)=> {
   }
 })
 
+ipcMain.handle("deleteMateria", async(event, idMateria) => {
+  try {
+    const result = await conectBD.deleteMateria(idMateria)
+  }catch(error){
+    console.log(error);
+    return null
+  }
+})
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
