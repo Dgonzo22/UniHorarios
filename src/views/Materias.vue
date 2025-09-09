@@ -76,7 +76,7 @@ export default {
   },
   methods: {
     async agregarMateria() {
-      await window.electronAPI.invoke("insertMateria",this.nombre, this.NRC, this.creditos);
+      await window.electronAPI.invoke("insertMateria",this.nuevaMateria.nombre, this.nuevaMateria.nrc, this.nuevaMateria.creditos);
       this.cargarMaterias()
       this.openNewMateria = false
     },
@@ -88,9 +88,17 @@ export default {
       this.nuevaMateria = { ...this.materias[index] };
       this.editandoIndex = index;
     },
+
      async eliminarMateria(idMateria) {
        await window.electronAPI.invoke("deleteMateria",idMateria)
         this.cargarMaterias()
+      },
+    async eliminarMateria(idMateria) {
+      if (confirm("¿Estás seguro de que quieres eliminar esta materia?")) {
+        await window.electronAPI.invoke("deleteMateria",idMateria)
+        this.cargarMaterias()
+      }
+
     }
   }
 };

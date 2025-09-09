@@ -81,6 +81,7 @@ function deleteMateria(idMateria){
 
   })
 }
+
 /////////////////////////////////////////// Docentes
 function getDocentes() {
   return new Promise((resolve, reject) => {
@@ -120,6 +121,19 @@ function deleteDocente(idDocente){
   return new Promise((resolve, reject)=> {
     const query = "DELETE FROM docentes WHERE docentes.idDocente = ?"
     db.run(query, [idDocente], function (err){
+        if (err){
+        reject(err)
+      }else{
+        resolve({ changes: this.changes }); 
+      }
+         })
+  })
+}
+function deleteMateria(idMateria){
+  return new Promise((resolve, reject)=> {
+    const query = "DELETE FROM Materias WHERE Materias.idMateria = ?"
+    db.run(query, [idMateria], function (err){
+
       if (err){
         reject(err)
       }else{
@@ -130,7 +144,8 @@ function deleteDocente(idDocente){
   })
 }
 
-//// Exportación
+
+
 export default {
   checkLogin,
   getMaterias,
