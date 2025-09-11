@@ -113,7 +113,7 @@ function updateMateria(ID_MATERIA, nombre, NRC, Creditos) {
   return new Promise((resolve, reject) => {
     const query = `
       UPDATE MATERIAS 
-      SET NOMBRE = ?, NRC = ?, Creditos = ?
+      SET NOMBRE = ?, NRC = ?, CREDITOS = ?
       WHERE ID_MATERIA = ?
     `;
     db.run(query, [nombre, NRC, Creditos, ID_MATERIA], function (err) {
@@ -169,9 +169,15 @@ function deleteDocente(idDocente) {
 /////////////////////////////////////////// Horarios
 function getHorarios() {
   return new Promise((resolve, reject) => {
-    const query = 'SELECT * FROM HORARIOS';
-    db.all(query, [], (err, rows) => {
-      if (err) reject(err);
+    db.all(`
+      SELECT H.ID_HORARIO, H.SEMESTRE, H.GRUPO, H.HORAINICIO, H.HORAFINAL, H.PERIODO, H.ANIO,
+             D.DIA, M.NOMBRE AS NOMBRE_MATERIA, DOC.NOMBRE AS NOMBRE_DOCENTE
+      FROM HORARIOS H
+      LEFT JOIN MATERIAS M ON H.ID_MATERIA = M.ID_MATERIA
+      LEFT JOIN DOCENTES DOC ON H.ID_DOCENTE = DOC.ID_DOCENTE
+      LEFT JOIN DIAS D ON H.ID_HORARIO = D.ID_HORARIO
+    `, [], (err, rows) => {
+      if(err) reject(err);
       else resolve(rows);
     });
   });

@@ -1,7 +1,7 @@
 import { app, BrowserWindow } from 'electron';
 import path from 'node:path';
 import started from 'electron-squirrel-startup';
-import { ipcMain } from 'electron/main';
+import { ipcMain } from 'electron';
 import conectBD from './conectBD/conectBD.js';
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
@@ -58,16 +58,6 @@ ipcMain.handle("insertMateria",async(event, nombre,NRC,creditos)=> {
     return null
   }
 });
-
-ipcMain.handle("updateMateria", async (event, ID_MATERIA, nombre, NRC, Creditos) => {
-  try {
-    const result = await conectBD.updateMateria(ID_MATERIA, nombre, NRC, Creditos);
-    return result;
-  } catch (error) {
-    console.log(error);
-    return null;
-  }});
-
 ipcMain.handle("deleteMateria", async(event, idMateria) => {
   try {
     const result = await conectBD.deleteMateria(idMateria)
@@ -76,6 +66,16 @@ ipcMain.handle("deleteMateria", async(event, idMateria) => {
     return null
   }
 })
+ipcMain.handle("updateMateria", async (event, idMateria, nombre, NRC, creditos) => {
+  try {
+    const result = await conectBD.updateMateria(idMateria, nombre, NRC, creditos);
+    return result;
+  } catch (error) {
+    console.error("Error en updateMateria:", error);
+    return null;
+  }
+});
+
 ipcMain.handle("getDocentes",async(event) => {
   try {
     const result = await conectBD.getDocentes();
@@ -119,6 +119,25 @@ ipcMain.handle("getHorarios", async (event) => {
   } catch (error) {
     console.log(error);
     return null;
+  }
+});
+ipcMain.handle('getHorariosConDias', async () => {
+  try {
+    const horarios = await conectBD.getHorarios(); // usa conectBD, no db
+    const horariosConDias = [];
+
+    for (const h of horarios) {
+      const dias = await conectBD.getDiasByHorario(h.ID_HORARIO); // igual, conectBD
+      horariosConDias.push({
+        ...h,
+        dias: dias.map(d => d.DIA)
+      });
+    }
+
+    return horariosConDias;
+  } catch (err) {
+    console.error(err);
+    throw err;
   }
 });
 
@@ -231,4 +250,3 @@ app.on('window-all-closed', () => {
 });
 
 // In this file you can include the rest of your app's specific main process
-
