@@ -1,4 +1,4 @@
-src/data/*.db
+./src/data/*.db
 # Logs
 logs
 *.log
