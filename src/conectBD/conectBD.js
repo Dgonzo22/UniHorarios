@@ -14,7 +14,15 @@ db.serialize(() => {
     );
   `);
 });
-
+db.run(`
+    CREATE TABLE IF NOT EXISTS DOCENTES (
+        ID_DOCENTE INTEGER PRIMARY KEY AUTOINCREMENT,
+        NOMBRE TEXT NOT NULL,
+        CORREO TEXT NOT NULL UNIQUE,
+        CELULAR TEXT,
+        PERFIL TEXT
+    );
+  `);
 db.serialize(() => {
   db.run(`
     CREATE TABLE IF NOT EXISTS DIAS (
