@@ -103,18 +103,18 @@ function insertDocente(nombre, correo, celular, perfil) {
   });
 }
 
-function updateDocente(id, nombre, correo, celular, perfil) {
+function updateDocente(idDocente, nombre, correo, celular, perfil) {
   return new Promise((resolve, reject) => {
     const query = `
       UPDATE docentes 
       SET nombre = ?, correo = ?, celular = ?, perfil = ? 
-      WHERE id = ?
+      WHERE idDocente = ?
     `;
-    db.run(query, [nombre, correo, celular, perfil, id], function (err) {
+    db.run(query, [nombre, correo, celular, perfil, idDocente], function (err) {
       if (err) reject(err);
-      else resolve({ changes: this.changes }); // número de filas modificadas
-    });
-  });
+      else resolve({ changes: this.changes }); 
+    });
+  });
 }
 
 function deleteDocente(idDocente){

@@ -92,7 +92,15 @@ ipcMain.handle("deleteDocente", async(event, idDocente) => {
     return null
   }
 })
-
+ipcMain.handle("updateDocente", async (event, idDocente, nombre, correo, celular, perfil) => {
+  try {
+    const result = await conectBD.updateDocente(idDocente, nombre, correo, celular, perfil);
+    return result;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+});
 
 
 

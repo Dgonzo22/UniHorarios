@@ -2,18 +2,31 @@
   <div class="docentes">
     <h2 class="titulo">👨‍🏫 Gestión de Docentes</h2>
 
-    <!-- Formulario -->
-    <form @submit.prevent="" class="form">
+    <!-- Formulario Agregar -->
+    <form @submit.prevent="agregarDocente" class="form">
+      <h3>➕ Agregar Docente</h3>
       <div class="form-grid">
         <input v-model="nuevoDocente.nombre" placeholder="Nombre completo" required />
         <input v-model="nuevoDocente.correo" type="email" placeholder="Correo institucional" required />
         <input v-model="nuevoDocente.celular" placeholder="Celular" required />
         <input v-model="nuevoDocente.perfil" placeholder="Perfil académico" required />
       </div>
-      <button type="submit" class="btn-agregar" @click="agregarDocente()">
-       ➕ Agregar Docente
-      </button>
+      <button type="submit" class="btn-agregar">➕ Agregar Docente</button>
     </form>
+
+    <!-- Formulario Editar -->
+    <ComDialog :visible="openEditDocente" @closeDialog="openEditDocente=false">
+      <form @submit.prevent="actualizarDocente" class="form">
+        <h3>✏️ Editar Docente</h3>
+        <div class="form-grid">
+          <input v-model="docenteEdit.nombre" placeholder="Nombre completo" required />
+          <input v-model="docenteEdit.correo" type="email" placeholder="Correo institucional" required />
+          <input v-model="docenteEdit.celular" placeholder="Celular" required />
+          <input v-model="docenteEdit.perfil" placeholder="Perfil académico" required />
+        </div>
+        <button type="submit" class="btn-agregar">💾 Guardar Cambios</button>
+      </form>
+    </ComDialog>
 
     <!-- Tabla -->
     <div class="tabla-container">
@@ -29,15 +42,15 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(docente, index) in docentes" :key="index">
+          <tr v-for="(docente, index) in docentes" :key="docente.idDocente">
             <td>{{ index + 1 }}</td>
             <td>{{ docente.nombre }}</td>
             <td>{{ docente.correo }}</td>
             <td>{{ docente.celular }}</td>
             <td>{{ docente.perfil }}</td>
             <td class="acciones">
-              <button class="btn editar" @click="editarDocente(index)">✏️ Editar</button>
-              <button class="btn eliminar" @click="eliminarDocente(docente.idDocente)">🗑️ Eliminar</button>
+              <button class="btn editar" @click="openDialogEdit(docente)">✏️ Editar</button>
+              <button class="btn eliminar" @click="(docente.idDocente)">🗑️ Eliminar</button>
             </td>
           </tr>
           <tr v-if="docentes.length === 0">
@@ -50,39 +63,67 @@
 </template>
 
 <script>
+import ComDialog from '../components/ComDialog.vue';
+
 export default {
+  components: { ComDialog},
   name: "Docentes",
   data() {
     return {
       docentes: [],
       nuevoDocente: { nombre: "", correo: "", celular: "", perfil: "" },
+      docenteEdit: { idDocente: null, nombre: "", correo: "", celular: "", perfil: "" },
       openNewDocente: false,
-      editandoIndex:null
+      openEditDocente: false,
+      editandoIndex: null
     };
   },
-async created(){
-    const result = await window.electronAPI.invoke("getDocentes");
-    this.docentes = result
+  async created() {
+    this.cargarDocentes();
   },
   methods: {
     async agregarDocente() {
-      await window.electronAPI.invoke("insertDocente",this.nuevoDocente.nombre,this.nuevoDocente.correo,this.nuevoDocente.celular,this.nuevoDocente.perfil);
-      this.cargarDocentes()
-      this.openNewDocente =false
+      await window.electronAPI.invoke(
+        "insertDocente",
+        this.nuevoDocente.nombre,
+        this.nuevoDocente.correo,
+        this.nuevoDocente.celular,
+        this.nuevoDocente.perfil
+      );
+      this.cargarDocentes();
+      this.nuevoDocente = { nombre: "", correo: "", celular: "", perfil: "" }; // limpiar
+      this.openNewDocente = false;
     },
-    async cargarDocentes(){
-      const result = await window.electronAPI.invoke ("getDocentes")
-      this.docentes = result
+    async cargarDocentes() {
+      const result = await window.electronAPI.invoke("getDocentes");
+      this.docentes = result;
     },
-    editarDocente(index) {
-      this.nuevoDocente = { ...this.docentes[index] };
-      this.editando = index;
+    async openDialogEdit(docente){
+      this.openEditDocente =true
+      
+       this.docenteEdit.idDocente = docente.idDocente
+        this.docenteEdit.nombre = docente.nombre
+        this.docenteEdit.correo = docente.correo
+        this.docenteEdit.celular = docente.celular
+        this.docenteEdit.perfil = docente.perfil
+    },
+    async actualizarDocente() {
+      await window.electronAPI.invoke(
+        "updateDocente",
+        this.docenteEdit.idDocente,
+        this.docenteEdit.nombre,
+        this.docenteEdit.correo,
+        this.docenteEdit.celular,
+        this.docenteEdit.perfil
+      );
+      this.cargarDocentes();
+      this.openEditDocente = false;
     },
     async eliminarDocente(idDocente) {
-     await window.electronAPI.invoke("deleteDocente",idDocente);
-     this.cargarDocentes()
+      await window.electronAPI.invoke("deleteDocente", idDocente);
+      this.cargarDocentes();
     }
-  },
+  }
 };
 </script>
 
@@ -101,7 +142,7 @@ async created(){
   color: #2c3e50;
 }
 
-/* ===== FORMULARIO ===== */
+/* ===== FORMULARIOS ===== */
 .form {
   background: #fff;
   padding: 1.5rem;

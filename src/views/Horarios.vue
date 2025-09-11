@@ -50,20 +50,21 @@
         <!-- Horas y Días -->
         <div class="box">
           <h4>⏰ Horas y Días</h4>
+          
           <label>Hora Inicio</label>
           <input type="time" v-model="horaInicio" />
 
           <label>Hora Fin</label>
           <input type="time" v-model="horaFin" />
 
-          <label>Días de la Semana</label>
+         <label>Días de la Semana</label>
           <div class="dias">
             <label v-for="dia in diasSemana" :key="dia">
               <input type="checkbox" v-model="diasSeleccionados" :value="dia" />
               {{ dia }}
             </label>
           </div>
-        </div>
+        </div> 
 
         <!-- Vigencia -->
         <div class="box">
@@ -107,10 +108,10 @@ export default {
       grupos: ["Grupo 101", "Grupo 102"],
       materias: ["Ingeniería de Software", "Bases de Datos"],
       materia: "Ingeniería de Software",
-      docentes: ["Dr. Javier Ruiz", "Ing. María Torres"],
-      docente: "Dr. Javier Ruiz",
-      horaInicio: "07:00",
-      horaFin: "08:30",
+      docentes: ["Ing. Juan Carlos Herrera", "Ing. María Torres"],
+      docente: "Ing. Juan Carlos Herrera",
+      horaInicio: "00:00",
+      horaFin: "00:00",
       diasSemana: ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"],
       diasSeleccionados: [],
       fechaInicio: "",
