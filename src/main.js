@@ -58,6 +58,16 @@ ipcMain.handle("insertMateria",async(event, nombre,NRC,creditos)=> {
     return null
   }
 });
+
+ipcMain.handle("updateMateria", async (event, ID_MATERIA, nombre, NRC, Creditos) => {
+  try {
+    const result = await conectBD.updateMateria(ID_MATERIA, nombre, NRC, Creditos);
+    return result;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }});
+
 ipcMain.handle("deleteMateria", async(event, idMateria) => {
   try {
     const result = await conectBD.deleteMateria(idMateria)
@@ -101,7 +111,98 @@ ipcMain.handle("updateDocente", async (event, idDocente, nombre, correo, celular
     return null;
   }
 });
+/////////////////////////////////////////// Horarios
+ipcMain.handle("getHorarios", async (event) => {
+  try {
+    const result = await conectBD.getHorarios();
+    return result;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+});
 
+ipcMain.handle("insertHorario", async (event, semestre, grupo, horaInicio, horaFinal, periodo, anio, user, idDocente, idMateria) => {
+  try {
+    const result = await conectBD.insertHorario(semestre, grupo, horaInicio, horaFinal, periodo, anio, user, idDocente, idMateria);
+    return result;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+});
+
+ipcMain.handle("updateHorario", async (event, idHorario, semestre, grupo, horaInicio, horaFinal, periodo, anio, user, idDocente, idMateria) => {
+  try {
+    const result = await conectBD.updateHorario(idHorario, semestre, grupo, horaInicio, horaFinal, periodo, anio, user, idDocente, idMateria);
+    return result;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+});
+
+ipcMain.handle("deleteHorario", async (event, idHorario) => {
+  try {
+    const result = await conectBD.deleteHorario(idHorario);
+    return result;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+});
+/////////////////////////////////////////// Dias
+ipcMain.handle("getDias", async (event) => {
+  try {
+    const result = await conectBD.getDias();
+    return result;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+});
+
+ipcMain.handle("getDiasByHorario", async (event, idHorario) => {
+  // Obtener todos los días por ID_HORARIO
+  try {
+    const result = await conectBD.getDiasByHorario(idHorario);
+    return result;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+});
+
+
+ipcMain.handle("insertDia", async (event, idHorario, dia) => {
+  try {
+    const result = await conectBD.insertDia(idHorario, dia);
+    return result;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+});
+
+ipcMain.handle("updateDia", async (event, idDia, idHorario, dia) => {
+  try {
+    const result = await conectBD.updateDia(idDia, idHorario, dia);
+    return result;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+});
+
+ipcMain.handle("deleteDia", async (event, idDia) => {
+  try {
+    const result = await conectBD.deleteDia(idDia);
+    return result;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+});
 
 
 

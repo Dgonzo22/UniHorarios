@@ -1,49 +1,72 @@
 // conectBD.js
 const sqlite3 = require('sqlite3');
-const path = require('path');
 
 const db = new sqlite3.Database('src/data/data.db');
 
 // Crear tabla si no existe
 db.serialize(() => {
   db.run(`
-    CREATE TABLE IF NOT EXISTS Users (
-      user TEXT UNIQUE,
-      password TEXT,
-      name TEXT,
-      lastName TEXT
-    )
-  `);
-});
-db.serialize(() => {
-  db.run(`
-    CREATE TABLE IF NOT EXISTS Materias (
-      idMateria INTEGER PRIMARY KEY AUTOINCREMENT,
-      nombre TEXT NOT NULL,
-      NRC INTEGER,
-      Creditos TEXT
-    )
-  `);
-});
-db.serialize(() => {
-  db.run(`
-    CREATE TABLE IF NOT EXISTS docentes (
-      idDocente INTEGER PRIMARY KEY AUTOINCREMENT,
-      nombre TEXT NOT NULL,
-      correo TEXT NOT NULL,
-      celular TEXT NOT NULL,
-      perfil TEXT NOT NULL
-    )
+    CREATE TABLE IF NOT EXISTS USUARIOS (
+        USER TEXT PRIMARY KEY,
+        PASSWORD TEXT NOT NULL,
+        NAME TEXT NOT NULL,
+        LASTNAME TEXT NOT NULL
+    );
   `);
 });
 
-// Función de login usando promesas
+db.serialize(() => {
+  db.run(`
+    CREATE TABLE IF NOT EXISTS DIAS (
+        ID_DIAS INTEGER PRIMARY KEY AUTOINCREMENT,
+        ID_HORARIO INTEGER NOT NULL,
+        DIA TEXT NOT NULL,
+        FOREIGN KEY (ID_HORARIO) REFERENCES HORARIOS(ID_HORARIO)
+    );
+  `);
+});
+
+db.serialize(() => {
+  db.run(`
+    CREATE TABLE IF NOT EXISTS MATERIAS (
+        ID_MATERIA INTEGER PRIMARY KEY AUTOINCREMENT,
+        NOMBRE TEXT NOT NULL,
+        NRC TEXT NOT NULL UNIQUE,
+        CREDITOS INTEGER NOT NULL
+    );
+  `);
+});
+db.serialize(() => {
+  db.run(`
+    CREATE TABLE IF NOT EXISTS HORARIOS (
+        ID_HORARIO INTEGER PRIMARY KEY AUTOINCREMENT,
+        SEMESTRE TEXT NOT NULL,
+        GRUPO TEXT NOT NULL,
+        HORAINICIO TEXT NOT NULL,
+        HORAFINAL TEXT NOT NULL,
+        PERIODO TEXT NOT NULL,
+        ANIO INTEGER NOT NULL,
+
+        -- Claves foráneas
+        USER TEXT NOT NULL,
+        ID_DOCENTE INTEGER NOT NULL,
+        ID_MATERIA INTEGER NOT NULL,
+
+        FOREIGN KEY (USER) REFERENCES USUARIO(USER),
+        FOREIGN KEY (ID_DOCENTE) REFERENCES DOCENTES(ID_DOCENTE),
+        FOREIGN KEY (ID_MATERIA) REFERENCES MATERIA(ID_MATERIA)
+    );
+  `);
+});
+
+
+// Función de login
 function checkLogin(user, password) {
   return new Promise((resolve, reject) => {
-    const query = `SELECT * FROM Users WHERE user = ? AND password = ?`;
+    const query = `SELECT * FROM USUARIOS WHERE USER = ? AND PASSWORD = ?`;
     db.get(query, [user, password], (err, row) => {
       if (err) reject(err);
-      else resolve(row); // devuelve null si no existe
+      else resolve(row);
     });
   });
 }
@@ -51,7 +74,7 @@ function checkLogin(user, password) {
 /////////////////////////////////////////// Materias
 function getMaterias() {
   return new Promise((resolve, reject) => {
-    const query = 'SELECT * FROM Materias';
+    const query = 'SELECT * FROM MATERIAS';
     db.all(query, [], (err, rows) => {
       if (err) reject(err);
       else resolve(rows);
@@ -61,31 +84,40 @@ function getMaterias() {
 
 function insertMateria(nombre, NRC, Creditos) {
   return new Promise((resolve, reject) => {
-    const query = 'INSERT INTO Materias(nombre, NRC, Creditos) VALUES (?,?,?)';
+    const query = 'INSERT INTO MATERIAS(NOMBRE, NRC, CREDITOS) VALUES (?,?,?)';
     db.run(query, [nombre, NRC, Creditos], function (err) {
       if (err) reject(err);
       else resolve({ id: this.lastID });
     });
   });
 }
-function deleteMateria(idMateria){
-  return new Promise((resolve, reject)=> {
-    const query = "DELETE FROM Materias WHERE Materias.idMateria = ?"
-    db.run(query, [idMateria], function (err){
-      if (err){
-        reject(err)
-      }else{
-        resolve({ changes: this.changes }); 
-      }
-    })
 
-  })
+function deleteMateria(idMateria) {
+  return new Promise((resolve, reject) => {
+    const query = "DELETE FROM MATERIAS WHERE ID_MATERIA = ?";
+    db.run(query, [idMateria], function (err) {
+      if (err) reject(err);
+      else resolve({ changes: this.changes });
+    });
+  });
 }
-
+function updateMateria(ID_MATERIA, nombre, NRC, Creditos) {
+  return new Promise((resolve, reject) => {
+    const query = `
+      UPDATE MATERIAS 
+      SET NOMBRE = ?, NRC = ?, Creditos = ?
+      WHERE ID_MATERIA = ?
+    `;
+    db.run(query, [nombre, NRC, Creditos, ID_MATERIA], function (err) {
+      if (err) reject(err);
+      else resolve({ changes: this.changes });
+    });
+  });
+}
 /////////////////////////////////////////// Docentes
 function getDocentes() {
   return new Promise((resolve, reject) => {
-    const query = 'SELECT * FROM docentes';
+    const query = 'SELECT * FROM DOCENTES';
     db.all(query, [], (err, rows) => {
       if (err) reject(err);
       else resolve(rows);
@@ -95,7 +127,7 @@ function getDocentes() {
 
 function insertDocente(nombre, correo, celular, perfil) {
   return new Promise((resolve, reject) => {
-    const query = 'INSERT INTO docentes(nombre, correo, celular, perfil) VALUES (?,?,?,?)';
+    const query = 'INSERT INTO DOCENTES(NOMBRE, CORREO, CELULAR, PERFIL) VALUES (?,?,?,?)';
     db.run(query, [nombre, correo, celular, perfil], function (err) {
       if (err) reject(err);
       else resolve({ id: this.lastID });
@@ -106,40 +138,145 @@ function insertDocente(nombre, correo, celular, perfil) {
 function updateDocente(idDocente, nombre, correo, celular, perfil) {
   return new Promise((resolve, reject) => {
     const query = `
-      UPDATE docentes 
-      SET nombre = ?, correo = ?, celular = ?, perfil = ? 
-      WHERE idDocente = ?
+      UPDATE DOCENTES 
+      SET NOMBRE = ?, CORREO = ?, CELULAR = ?, PERFIL = ? 
+      WHERE ID_DOCENTE = ?
     `;
     db.run(query, [nombre, correo, celular, perfil, idDocente], function (err) {
       if (err) reject(err);
-      else resolve({ changes: this.changes }); 
-    });
-  });
+      else resolve({ changes: this.changes });
+    });
+  });
 }
 
-function deleteDocente(idDocente){
-  return new Promise((resolve, reject)=> {
-    const query = "DELETE FROM docentes WHERE docentes.idDocente = ?"
-    db.run(query, [idDocente], function (err){
-        if (err){
-        reject(err)
-      }else{
-        resolve({ changes: this.changes }); 
-      }
-         })
-  })
+function deleteDocente(idDocente) {
+  return new Promise((resolve, reject) => {
+    const query = "DELETE FROM DOCENTES WHERE ID_DOCENTE = ?";
+    db.run(query, [idDocente], function (err) {
+      if (err) reject(err);
+      else resolve({ changes: this.changes });
+    });
+  });
+}
+/////////////////////////////////////////// Horarios
+function getHorarios() {
+  return new Promise((resolve, reject) => {
+    const query = 'SELECT * FROM HORARIOS';
+    db.all(query, [], (err, rows) => {
+      if (err) reject(err);
+      else resolve(rows);
+    });
+  });
 }
 
+function insertHorario(semestre, grupo, horaInicio, horaFinal, periodo, anio, user, idDocente, idMateria) {
+  return new Promise((resolve, reject) => {
+    const query = `
+      INSERT INTO HORARIOS(SEMESTRE, GRUPO, HORAINICIO, HORAFINAL, PERIODO, ANIO, USER, ID_DOCENTE, ID_MATERIA)
+      VALUES (?,?,?,?,?,?,?,?,?)
+    `;
+    db.run(query, [semestre, grupo, horaInicio, horaFinal, periodo, anio, user, idDocente, idMateria], function (err) {
+      if (err) reject(err);
+      else resolve({ id: this.lastID });
+    });
+  });
+}
 
+function updateHorario(idHorario, semestre, grupo, horaInicio, horaFinal, periodo, anio, user, idDocente, idMateria) {
+  return new Promise((resolve, reject) => {
+    const query = `
+      UPDATE HORARIOS
+      SET SEMESTRE = ?, GRUPO = ?, HORAINICIO = ?, HORAFINAL = ?, PERIODO = ?, ANIO = ?, USER = ?, ID_DOCENTE = ?, ID_MATERIA = ?
+      WHERE ID_HORARIO = ?
+    `;
+    db.run(query, [semestre, grupo, horaInicio, horaFinal, periodo, anio, user, idDocente, idMateria, idHorario], function (err) {
+      if (err) reject(err);
+      else resolve({ changes: this.changes });
+    });
+  });
+}
 
+function deleteHorario(idHorario) {
+  return new Promise((resolve, reject) => {
+    const query = "DELETE FROM HORARIOS WHERE ID_HORARIO = ?";
+    db.run(query, [idHorario], function (err) {
+      if (err) reject(err);
+      else resolve({ changes: this.changes });
+    });
+  });
+}
+
+/////////////////////////////////////////// Dias
+function getDias() {
+  return new Promise((resolve, reject) => {
+    const query = 'SELECT * FROM DIAS';
+    db.all(query, [], (err, rows) => {
+      if (err) reject(err);
+      else resolve(rows);
+    });
+  });
+}
+function getDiasByHorario(idHorario) {
+  // Obtener todos los días por ID_HORARIO
+  return new Promise((resolve, reject) => {
+    const query = 'SELECT * FROM DIAS WHERE ID_HORARIO = ?';
+    db.all(query, [idHorario], (err, rows) => {
+      if (err) reject(err);
+      else resolve(rows);
+    });
+  });
+}
+function insertDia(idHorario, dia) {
+  return new Promise((resolve, reject) => {
+    const query = 'INSERT INTO DIAS(ID_HORARIO, DIA) VALUES (?, ?)';
+    db.run(query, [idHorario, dia], function (err) {
+      if (err) reject(err);
+      else resolve({ id: this.lastID });
+    });
+  });
+}
+
+function updateDia(idDia, idHorario, dia) {
+  return new Promise((resolve, reject) => {
+    const query = `
+      UPDATE DIAS
+      SET ID_HORARIO = ?, DIA = ?
+      WHERE ID_DIAS = ?
+    `;
+    db.run(query, [idHorario, dia, idDia], function (err) {
+      if (err) reject(err);
+      else resolve({ changes: this.changes });
+    });
+  });
+}
+
+function deleteDia(idDia) {
+  return new Promise((resolve, reject) => {
+    const query = "DELETE FROM DIAS WHERE ID_DIAS = ?";
+    db.run(query, [idDia], function (err) {
+      if (err) reject(err);
+      else resolve({ changes: this.changes });
+    });
+  });
+}
 
 export default {
   checkLogin,
   getMaterias,
   insertMateria,
+  updateMateria,
   deleteMateria,
   getDocentes,
   insertDocente,
   updateDocente,
-  deleteDocente
+  deleteDocente,
+  getHorarios,
+  insertHorario,
+  updateHorario,
+  deleteHorario,
+  getDias,
+  getDiasByHorario,
+  insertDia,
+  updateDia,
+  deleteDia
 };
