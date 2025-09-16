@@ -11,6 +11,9 @@
           <button @click="$router.push('/VistaDeHorario')">⌛ Vista de Horario</button>
           <button @click="$router.push('/ViewCalendario')">⌛ Calendario</button>
 
+          <!-- 🔹 Botones de acciones -->
+          <hr />
+          <button class="btn-exit" @click="cerrarApp">❌ Salir del programa</button>
         </aside>
 
         <!-- Vista dinámica -->
@@ -53,9 +56,13 @@ export default {
         this.isValid = true;
       }
     }
-  }
-};
-</script>
+  },
+    cerrarApp() {
+      console.log('Cerrando la aplicación...');
+      window.electronAPI.closeApp(); // Requiere exponer esto en preload.js
+    }
+  };
+  </script>
 
 <style scoped>
 /* Contenedor principal */
@@ -176,6 +183,26 @@ export default {
   color: #FFD200; 
   transform: translateY(-2px);
   box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+}
+
+.btn-logout {
+  background: #ffcc00;
+  color: #002855;
+  margin-top: 20px;
+}
+
+.btn-logout:hover {
+  background: #e6b800;
+  color: #002855;
+}
+
+.btn-exit {
+  background: #e74c3c;
+  color: white;
+}
+
+.btn-exit:hover {
+  background: #c0392b;
 }
 </style>
 

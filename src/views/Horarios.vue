@@ -17,11 +17,13 @@
           <h4>📘 Información Básica</h4>
           <label>Semestre</label>
           <select v-model="semestre">
+            <option disabled value="">Seleccionar</option>
             <option v-for="n in 10" :key="n" :value="n">Semestre {{ n }}</option>
           </select>
 
           <label>Grupo</label>
           <select v-model="grupo">
+            <option disabled value="">Seleccionar</option>
             <option v-for="g in grupos" :key="g" :value="g">{{ g }}</option>
           </select>
         </div>
@@ -30,12 +32,14 @@
           <h4>📖 Información de la Materia</h4>
           <label>Materia</label>
           <select v-model="materiaSeleccionada">
+            <option disabled value="">Seleccionar</option>
             <option v-for="m in materias" :key="m.ID_MATERIA" :value="m">{{ m.NOMBRE }}</option>
           </select>
 
           <label>Docente</label>
           <select v-model="docenteSeleccionado">
-            <option v-for="d in docentes" :key="d.ID_DOCENTE" :value="d">{{ d.NOMBRE }}</option>
+            <option disabled value="">Seleccionar</option>
+            <option v-for="d in docentes" :key="d.ID_IDENTIFICACION" :value="d">{{ d.NOMBRE }}</option>
           </select>
         </div>
       </section>
@@ -44,10 +48,10 @@
       <section class="panel">
         <h3>Configuración de Horario</h3>
 
-                <div class="box">
-                  <h4>⏰ Horas y Días</h4>
+        <div class="box">
+          <h4>⏰ Horas y Días</h4>
 
-                    <label>Hora Inicio</label>
+          <label>Hora Inicio</label>
           <input type="time" v-model="horaInicio" />
 
           <label>Hora Fin</label>
@@ -57,14 +61,6 @@
           <select v-model="diasSeleccionados" multiple>
             <option v-for="dia in diasSemana" :key="dia" :value="dia">{{ dia }}</option>
           </select>
-        </div>
-
-        <div class="box">
-          <h4>📅 Vigencia del Horario</h4>
-          <label>Fecha Inicio</label>
-          <input type="date" v-model="fechaInicio" />
-          <label>Fecha Fin</label>
-          <input type="date" v-model="fechaFin" />
         </div>
 
         <div class="box vista-previa">
@@ -78,7 +74,7 @@
         </div>
 
         <div class="acciones">
-          <button class="cancelar" @click="resetFormulario">❌ Cancelar</button>
+          <button class="restablecer" @click="resetFormulario">🔄 Restablecer</button>
           <button class="validar" @click="validarHorario">✔️ Validar</button>
           <button class="guardar" @click="guardarHorario">💾 Guardar</button>
         </div>
@@ -92,15 +88,15 @@ export default {
   name: "Horarios",
   data() {
     return {
-      semestre: 1,
-      grupo: "Grupo 101",
-      grupos: ["Grupo 101", "Grupo 102"],
+      semestre: "",
+      grupo: "",
+      grupos: ["Grupo A", "Grupo B"],
       materias: [],
-      materiaSeleccionada: null,
+      materiaSeleccionada: "",
       docentes: [],
-      docenteSeleccionado: null,
-      horaInicio: "08:00",
-      horaFin: "10:00",
+      docenteSeleccionado: "",
+      horaInicio: "",
+      horaFin: "",
       diasSemana: ["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"],
       diasSeleccionados: [],
       fechaInicio: "",
@@ -116,7 +112,6 @@ export default {
       try {
         const result = await window.electronAPI.invoke("getMaterias");
         this.materias = result || [];
-        this.materiaSeleccionada = this.materias[0] || null;
       } catch (err) {
         console.error("Error cargando materias:", err);
       }
@@ -125,7 +120,6 @@ export default {
       try {
         const result = await window.electronAPI.invoke("getDocentes");
         this.docentes = result || [];
-        this.docenteSeleccionado = this.docentes[0] || null;
       } catch (err) {
         console.error("Error cargando docentes:", err);
       }
@@ -137,47 +131,62 @@ export default {
       }
       alert("Validación correcta ✅");
     },
-async guardarHorario() {
-  try {
-    if (!this.materiaSeleccionada || !this.docenteSeleccionado || this.diasSeleccionados.length === 0) {
-      alert("Complete todos los campos antes de guardar ⚠️");
-      return;
-    }
+    async guardarHorario() {
+      try {
+        if (!this.materiaSeleccionada || !this.docenteSeleccionado || this.diasSeleccionados.length === 0) {
+          alert("Complete todos los campos antes de guardar ⚠️");
+          return;
+        }
 
-    // Insertar horario
-    const horarioId = await window.electronAPI.invoke(
-      "insertHorario",
-      this.semestre,
-      this.grupo,
-      this.horaInicio,
-      this.horaFin,
-      "Periodo 1", // ejemplo
-      new Date().getFullYear(),
-      "admin", // usuario logueado
-      this.docenteSeleccionado.ID_DOCENTE,
-      this.materiaSeleccionada.ID_MATERIA
-    );
+        const horariosExistentes = await window.electronAPI.invoke("getHorarios");
 
-    // Insertar días asociados al horario
-    for (const dia of this.diasSeleccionados) {
-      await window.electronAPI.invoke("insertDia", horarioId.id, dia);
-    }
+        for (const dia of this.diasSeleccionados) {
+          const conflicto = horariosExistentes.find(h =>
+            h.GRUPO === this.grupo &&          
+            h.DIA === dia &&                   
+            !(
+              this.horaFin <= h.HORA_INICIO || 
+              this.horaInicio >= h.HORA_FINAL  
+            )
+          );
 
-    alert("Horario guardado 💾");
-    this.resetFormulario();
-  } catch (err) {
-    console.error(err);
-    alert("Error guardando horario ❌");
-  }
-},
+          if (conflicto) {
+            alert(`⚠️ Conflicto detectado: ya existe una clase el ${dia} de ${conflicto.HORA_INICIO} a ${conflicto.HORA_FINAL}`);
+            return; 
+          }
+        }
+
+        const horarioId = await window.electronAPI.invoke(
+          "insertHorario",
+          this.semestre,
+          this.grupo,
+          this.horaInicio,
+          this.horaFin,
+          "Periodo 1",
+          new Date().getFullYear(),
+          "admin", 
+          this.docenteSeleccionado.ID_DOCENTE,
+          this.materiaSeleccionada.ID_MATERIA
+        );
+
+        for (const dia of this.diasSeleccionados) {
+          await window.electronAPI.invoke("insertDia", horarioId.id, dia);
+        }
+
+        alert("Horario guardado 💾");
+      } catch (err) {
+        console.error(err);
+        alert("Error guardando horario ❌");
+      }
+    },
 
     resetFormulario() {
-      this.semestre = 1;
-      this.grupo = this.grupos[0];
-      this.materiaSeleccionada = this.materias[0] || null;
-      this.docenteSeleccionado = this.docentes[0] || null;
-      this.horaInicio = "08:00";
-      this.horaFin = "10:00";
+      this.semestre = "";
+      this.grupo = "";
+      this.materiaSeleccionada = "";
+      this.docenteSeleccionado = "";
+      this.horaInicio = "";
+      this.horaFin = "";
       this.diasSeleccionados = [];
       this.fechaInicio = "";
       this.fechaFin = "";
@@ -186,9 +195,7 @@ async guardarHorario() {
 };
 </script>
 
-
 <style scoped>
-/* === Estilos iguales a los que compartiste === */
 .horarios-app {
   background: #003366;
   min-height: 100vh;
@@ -254,12 +261,6 @@ select {
   border-radius: 4px;
   border: 1px solid #ccc;
 }
-.dias {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 8px;
-}
 .vista-previa {
   background: #fffbea;
   border-left: 4px solid #facc15;
@@ -276,8 +277,8 @@ button {
   border-radius: 6px;
   cursor: pointer;
 }
-.cancelar {
-  background: #f87171;
+.restablecer {
+  background: #fbbf24;
   color: white;
 }
 .validar {

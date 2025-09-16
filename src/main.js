@@ -9,6 +9,7 @@ if (started) {
   app.quit();
 }
 
+
 const createWindow = () => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
@@ -250,3 +251,9 @@ app.on('window-all-closed', () => {
 });
 
 // In this file you can include the rest of your app's specific main process
+
+// 👇 Escucha la señal de cerrarApp desde renderer
+ipcMain.on("close-app", () => {
+  console.log('Cerrando la aplicación...');
+  app.quit();
+});

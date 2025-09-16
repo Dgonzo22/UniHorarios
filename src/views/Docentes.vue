@@ -1,95 +1,182 @@
 <template>
-  <div class="docentes">
-    <h2 class="titulo">👨‍🏫 Gestión de Docentes</h2>
+  <div class="docentes-container">
+    <h2>👨‍🏫 Gestión de Docentes</h2>
 
-    <!-- Formulario Agregar -->
-    <form @submit.prevent="agregarDocente" class="form">
-      <h3>➕ Agregar Docente</h3>
-      <div class="form-grid">
-        <input v-model="nuevoDocente.NOMBRE" placeholder="Nombre completo" required />
-        <input v-model="nuevoDocente.CORREO" type="email" placeholder="Correo institucional" required />
-        <input v-model="nuevoDocente.CELULAR" placeholder="Celular" required />
-        <input v-model="nuevoDocente.PERFIL" placeholder="Perfil académico" required />
+    <!-- Formulario de nuevo docente -->
+    <form class="form-docente" @submit.prevent="agregarDocente">
+      <div class="input-group">
+        <label for="idIdentificacion">ID Profesor:</label>
+      <input
+        id="idIdentificacion"
+        type="number"
+        v-model="nuevoDocente.ID_IDENTIFICACION"
+        @input="limitIdLength('nuevoDocente')"
+        required
+        placeholder="Máx. 6 dígitos"
+      />
+    </div>
+
+      <div class="input-group">
+        <label for="nombre">Nombre:</label>
+        <input
+          id="nombre"
+          type="text"
+          v-model="nuevoDocente.NOMBRE"
+          maxlength="30"
+          required
+          placeholder="Máx. 30 caracteres"
+        />
       </div>
+
+      <div class="input-group">
+        <label for="correo">Correo:</label>
+        <input
+          id="correo"
+          type="email"
+          v-model="nuevoDocente.CORREO"
+          placeholder="ejemplo@correo.com"
+        />
+      </div>
+
+      <div class="input-group">
+        <label for="perfil">Perfil:</label>
+        <input
+          id="perfil"
+          type="text"
+          v-model="nuevoDocente.PERFIL"
+          placeholder="Perfil del docente"
+        />
+      </div>
+
       <button type="submit" class="btn-agregar">➕ Agregar Docente</button>
     </form>
 
-    <!-- Formulario Editar -->
-    <ComDialog :visible="openEditDocente" @closeDialog="openEditDocente=false">
-      <form @submit.prevent="actualizarDocente" class="form">
-        <h3>✏️ Editar Docente</h3>
-        <div class="form-grid">
-          <input v-model="docenteEdit.NOMBRE" placeholder="Nombre completo" required />
-          <input v-model="docenteEdit.CORREO" type="email" placeholder="Correo institucional" required />
-          <input v-model="docenteEdit.CELULAR" placeholder="Celular" required />
-          <input v-model="docenteEdit.PERFIL" placeholder="Perfil académico" required />
-        </div>
-        <button type="submit" class="btn-agregar">💾 Guardar Cambios</button>
-      </form>
-    </ComDialog>
+    <!-- Tabla de docentes -->
+    <table class="tabla-docentes">
+      <thead>
+        <tr>
+          <th>ID Profesor</th>
+          <th>Nombre</th>
+          <th>Correo</th>
+          <th>Perfil</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="docente in docentes" :key="docente.ID_DOCENTE">
+          <td>{{ docente.ID_IDENTIFICACION }}</td>
+          <td>{{ docente.NOMBRE }}</td>
+          <td>{{ docente.CORREO }}</td>
+          <td>{{ docente.PERFIL }}</td>
+          <td>
+            <button @click="openDialogEdit(docente)" class="btn-editar">✏️ Editar</button>
+            <button @click="eliminarDocente(docente.ID_DOCENTE)" class="btn-eliminar">🗑️ Eliminar</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
 
-    <!-- Tabla -->
-    <div class="tabla-container">
-      <table class="tabla">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Nombre</th>
-            <th>Correo</th>
-            <th>Celular</th>
-            <th>Perfil</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(docente, index) in docentes" :key="docente.ID_DOCENTE">
-            <td>{{ index + 1 }}</td>
-            <td>{{ docente.NOMBRE }}</td>
-            <td>{{ docente.CORREO }}</td>
-            <td>{{ docente.CELULAR }}</td>
-            <td>{{ docente.PERFIL }}</td>
-            <td class="acciones">
-              <button class="btn editar" @click="openDialogEdit(docente)">✏️ Editar</button>
-              <button class="btn eliminar" @click="eliminarDocente(docente.ID_DOCENTE)">🗑️ Eliminar</button>
-            </td>
-          </tr>
-          <tr v-if="docentes.length === 0">
-            <td colspan="6" class="sin-registros">⚠️ No hay docentes registrados.</td>
-          </tr>
-        </tbody>
-      </table>
+    <!-- Modal de edición -->
+    <div v-if="openEditDocente" class="modal">
+      <div class="modal-content">
+        <h3>✏️ Editar Docente</h3>
+
+        <div class="input-group">
+          <label>ID Profesor:</label>
+          <input
+            type="number"
+            v-model="docenteEdit.ID_IDENTIFICACION"
+            @input="limitIdLength('docenteEdit')"
+            maxlength="6"
+            required
+          />
+        </div>
+
+        <div class="input-group">
+          <label>Nombre:</label>
+          <input
+            type="text"
+            v-model="docenteEdit.NOMBRE"
+            maxlength="30"
+            required
+          />
+        </div>
+
+        <div class="input-group">
+          <label>Correo:</label>
+          <input type="email" v-model="docenteEdit.CORREO" />
+        </div>
+
+        <div class="input-group">
+          <label>Perfil:</label>
+          <input type="text" v-model="docenteEdit.PERFIL" />
+        </div>
+
+        <div class="modal-actions">
+          <button @click="actualizarDocente" class="btn-guardar">💾 Guardar</button>
+          <button @click="openEditDocente = false" class="btn-cancelar">❌ Cancelar</button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
-<script>
-import ComDialog from '../components/ComDialog.vue';
 
+
+<script>
 export default {
-  components: { ComDialog },
   name: "Docentes",
   data() {
-    return {
-      docentes: [],
-      nuevoDocente: { NOMBRE: "", CORREO: "", CELULAR: "", PERFIL: "" },
-      docenteEdit: { ID_DOCENTE: null, NOMBRE: "", CORREO: "", CELULAR: "", PERFIL: "" },
-      openEditDocente: false,
-    };
-  },
+  return {
+    docentes: [],
+    nuevoDocente: { ID_IDENTIFICACION: "", NOMBRE: "", CORREO: "", PERFIL: "" },
+    docenteEdit: { ID_DOCENTE: null, ID_IDENTIFICACION: "", NOMBRE: "", CORREO: "", PERFIL: "" },
+    openEditDocente: false,
+  };
+},
+
   created() {
     this.cargarDocentes();
   },
   methods: {
-    async agregarDocente() {
+          limitIdLength(objKey) {
+      let value = this[objKey].ID_IDENTIFICACION?.toString() || "";
+      // 1️⃣ Quitar todo lo que no sea dígito
+      value = value.replace(/\D/g, "");
+      // 2️⃣ Limitar a 6 dígitos
+      if (value.length > 6) {
+      value = value.slice(0, 6);
+      }
+      // 3️⃣ Convertir a número
+      let num = parseInt(value, 10);
+      // 4️⃣ Validar que sea mínimo 1
+      if (isNaN(num) || num < 1) {
+      num = 0; // siempre inicia desde 1
+      } 
+
+      // 5️⃣ Guardar
+      this[objKey].ID_IDENTIFICACION = num.toString();
+      },
+
+      async agregarDocente() {
+      if (!/^[0-9]{1,6}$/.test(this.nuevoDocente.ID_IDENTIFICACION)) {
+        alert("❌ El ID debe ser un número de máximo 6 dígitos.");
+        return;
+      }
+      if (this.nuevoDocente.NOMBRE.length > 30) {
+        alert("❌ El nombre no puede superar los 30 caracteres.");
+        return;
+      }
+
       await window.electronAPI.invoke(
         "insertDocente",
+        this.nuevoDocente.ID_IDENTIFICACION,
         this.nuevoDocente.NOMBRE,
         this.nuevoDocente.CORREO,
-        this.nuevoDocente.CELULAR,
         this.nuevoDocente.PERFIL
       );
       this.cargarDocentes();
-      this.nuevoDocente = { NOMBRE: "", CORREO: "", CELULAR: "", PERFIL: "" };
+      this.nuevoDocente = { ID_IDENTIFICACION: "", NOMBRE: "", CORREO: "", PERFIL: "" }; // ✅ corregido
       alert("✅ Docente agregado con éxito.");
     },
     async cargarDocentes() {
@@ -103,15 +190,25 @@ export default {
     async actualizarDocente() {
       if (!confirm("¿Seguro que quieres guardar los cambios en este docente?")) return;
 
+      if (!/^[0-9]{1,6}$/.test(this.docenteEdit.ID_IDENTIFICACION)) {
+        alert("❌ El ID debe ser un número de máximo 6 dígitos.");
+        return;
+      }
+      if (this.docenteEdit.NOMBRE.length > 30) {
+        alert("❌ El nombre no puede superar los 30 caracteres.");
+        return;
+      }
+
       await window.electronAPI.invoke(
         "updateDocente",
         this.docenteEdit.ID_DOCENTE,
+        this.docenteEdit.ID_IDENTIFICACION,
         this.docenteEdit.NOMBRE,
         this.docenteEdit.CORREO,
-        this.docenteEdit.CELULAR,
-        this.docenteEdit.PERFIL
+        this.docenteEdit.PERFIL,
       );
       this.cargarDocentes();
+      console.log(this.docentes);
       this.openEditDocente = false;
 
       alert("✅ Docente actualizado correctamente.");
@@ -121,153 +218,149 @@ export default {
 
       await window.electronAPI.invoke("deleteDocente", idDocente);
       this.cargarDocentes();
-
       alert("🗑️ Docente eliminado con éxito.");
     }
+  
   }
 };
 </script>
 
 <style scoped>
-.docentes {
-  padding: 2rem;
-  max-width: 1100px;
+.docentes-container {
+  max-width: 900px;
   margin: auto;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  padding: 20px;
+  font-family: Arial, sans-serif;
 }
 
-.titulo {
+h2 {
   text-align: center;
-  margin-bottom: 1.5rem;
-  font-size: 1.8rem;
+  margin-bottom: 20px;
   color: #2c3e50;
 }
 
-/* ===== FORMULARIOS ===== */
-.form {
-  background: #fff;
-  padding: 1.5rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  margin-bottom: 2rem;
-}
-
-.form-grid {
+.form-docente {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 25px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
-.form input {
-  padding: 0.7rem;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  outline: none;
-  transition: 0.2s;
+.input-group {
+  display: flex;
+  flex-direction: column;
 }
 
-.form input:focus {
-  border-color: #3498db;
-  box-shadow: 0 0 6px rgba(52, 152, 219, 0.4);
+label {
+  font-weight: bold;
+  margin-bottom: 5px;
 }
 
-.btn-agregar {
-  margin-top: 1rem;
-  width: 100%;
-  padding: 0.8rem;
-  background: #3498db;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
+input {
+  padding: 8px;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+}
+
+button {
   cursor: pointer;
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: none;
   font-weight: bold;
   transition: 0.3s;
 }
 
+.btn-agregar {
+  grid-column: span 2;
+  background: #28a745;
+  color: white;
+}
+
 .btn-agregar:hover {
-  background: #2980b9;
+  background: #218838;
 }
 
-/* ===== TABLA ===== */
-.tabla-container {
-  overflow-x: auto;
-}
-
-.tabla {
+.tabla-docentes {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 1rem;
+  margin-top: 20px;
 }
 
-th, td {
-  border: 1px solid #e0e0e0;
-  padding: 0.8rem;
+.tabla-docentes th,
+.tabla-docentes td {
+  border: 1px solid #dee2e6;
+  padding: 10px;
   text-align: center;
 }
 
-th {
-  background: #f8f9fa;
-  color: #2c3e50;
-  font-weight: bold;
+.tabla-docentes th {
+  background: #343a40;
+  color: white;
 }
 
-tr:nth-child(even) {
-  background: #fdfdfd;
+.btn-editar {
+  background: #ffc107;
+  margin-right: 5px;
 }
 
-.sin-registros {
-  text-align: center;
-  color: #7f8c8d;
-  font-style: italic;
+.btn-editar:hover {
+  background: #e0a800;
 }
 
-/* ===== BOTONES ===== */
-.acciones {
+.btn-eliminar {
+  background: #dc3545;
+  color: white;
+}
+
+.btn-eliminar:hover {
+  background: #c82333;
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6);
   display: flex;
-  gap: 0.5rem;
   justify-content: center;
+  align-items: center;
 }
 
-.btn {
-  padding: 0.4rem 0.8rem;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  transition: 0.2s;
+.modal-content {
+  background: white;
+  padding: 25px;
+  border-radius: 10px;
+  width: 400px;
 }
 
-.btn.editar {
-  background: #27ae60;
-  color: #fff;
+.modal-actions {
+  margin-top: 15px;
+  display: flex;
+  justify-content: space-between;
 }
 
-.btn.editar:hover {
-  background: #1e8449;
+.btn-guardar {
+  background: #007bff;
+  color: white;
 }
 
-.btn.eliminar {
-  background: #e74c3c;
-  color: #fff;
+.btn-guardar:hover {
+  background: #0056b3;
 }
 
-.btn.eliminar:hover {
-  background: #c0392b;
+.btn-cancelar {
+  background: #6c757d;
+  color: white;
 }
 
-/* ===== RESPONSIVE ===== */
-@media (max-width: 768px) {
-  .form-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .tabla th, .tabla td {
-    font-size: 0.85rem;
-    padding: 0.6rem;
-  }
-
-  .btn {
-    font-size: 0.8rem;
-  }
+.btn-cancelar:hover {
+  background: #5a6268;
 }
 </style>
