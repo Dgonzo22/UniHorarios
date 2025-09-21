@@ -159,12 +159,21 @@ export default {
       },
 
       async agregarDocente() {
+      // Validar que todos los campos estén llenos
+      if (!this.nuevoDocente.ID_IDENTIFICACION ||
+          !this.nuevoDocente.NOMBRE ||
+          !this.nuevoDocente.CORREO ||
+          !this.nuevoDocente.PERFIL) {
+        alert('Por favor, completa todos los campos antes de registrar el docente.');
+        return;
+      }
+      // Validación previa de ID y nombre
       if (!/^[0-9]{1,6}$/.test(this.nuevoDocente.ID_IDENTIFICACION)) {
-        alert("❌ El ID debe ser un número de máximo 6 dígitos.");
+        alert('❌ El ID debe ser un número de máximo 6 dígitos.');
         return;
       }
       if (this.nuevoDocente.NOMBRE.length > 30) {
-        alert("❌ El nombre no puede superar los 30 caracteres.");
+        alert('❌ El nombre no puede superar los 30 caracteres.');
         return;
       }
 
@@ -277,30 +286,47 @@ button {
 
 .btn-agregar {
   grid-column: span 2;
-  background: #28a745;
-  color: white;
+  background: hsl(212, 100%, 17%);
+  color: #ffD200;
 }
 
 .btn-agregar:hover {
-  background: #218838;
+  background: #217588;
 }
 
+/* Colores institucionales para tablas modernas y legibles, sin brillo */
 .tabla-docentes {
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
+  background: #fff;
+  border-radius: 12px;
+  /* Quitar sombra */
+  box-shadow: none;
+  overflow: hidden;
 }
-
-.tabla-docentes th,
-.tabla-docentes td {
-  border: 1px solid #dee2e6;
-  padding: 10px;
-  text-align: center;
-}
-
 .tabla-docentes th {
-  background: #343a40;
-  color: white;
+  background: hsl(212, 100%, 17%);
+  color: #ffD200;
+  font-weight: 700;
+  padding: 12px;
+  text-align: center;
+  border-bottom: 2px solid #f0f4f8;
+}
+.tabla-docentes td {
+  padding: 10px;
+  border-top: 1px solid #e5e7eb;
+  color: #222;
+  background: #fff;
+}
+.tabla-docentes tr:nth-child(even) td {
+  background: #f7fafc;
+}
+.tabla-docentes tr:hover td {
+  background: #e3f0ff;
+}
+.tabla-docentes th, .tabla-docentes td {
+  border: 1px solid #d1d5db;
 }
 
 .btn-editar {

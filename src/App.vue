@@ -4,16 +4,17 @@
       <div class="container">
         <!-- Menú lateral -->
         <aside class="menu">
-          <h2>📌 Menú Principal</h2>
-          <button @click="$router.push('/docentes')">👨‍🏫 Docentes</button>
-          <button @click="$router.push('/horarios')">📅 Horarios</button>
-          <button @click="$router.push('/Materias')">📝 Materias</button>
-          <button @click="$router.push('/VistaDeHorario')">⌛ Vista de Horario</button>
-          <button @click="$router.push('/ViewCalendario')">⌛ Calendario</button>
-
-          <!-- 🔹 Botones de acciones -->
-          <hr />
-          <button class="btn-exit" @click="cerrarApp">❌ Salir del programa</button>
+          <img src="/src/views/img/backgroundUNI.jpg" alt="Fondo Uniminuto" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;opacity:0.35;z-index:0;background-color: rgba(2, 7, 69, 0.5);">
+          <div style="position:relative;z-index:1;display:flex;flex-direction:column;height:100%;">
+            <h2>📌 Menú Principal</h2>
+            <button @click="$router.push('/docentes')">👨‍🏫 Docentes</button>
+            <button @click="$router.push('/horarios')">📅 Horarios</button>
+            <button @click="$router.push('/Materias')">📝 Materias</button>
+            <button @click="$router.push('/VistaDeHorario')">⌛ Vista de Horario</button>
+            <button @click="$router.push('/ViewCalendario')">⌛ Calendario</button>
+            <hr />
+            <button class="btn-exit" @click="cerrarApp">❌ Salir del programa</button>
+          </div>
         </aside>
 
         <!-- Vista dinámica -->
@@ -55,12 +56,12 @@ export default {
       } else {
         this.isValid = true;
       }
-    }
-  },
+    },
     cerrarApp() {
       console.log('Cerrando la aplicación...');
       window.electronAPI.closeApp(); // Requiere exponer esto en preload.js
     }
+  }
   };
   </script>
 
@@ -69,19 +70,22 @@ export default {
 .container {
   display: flex;
   height: 100vh;
+  min-height: 100vh;
+  font-size: 15px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: #FFFFFF; 
+  background: #FFFFFF;
+  overflow: hidden;
 }
 
 /* Menú lateral */
 .menu {
   width: 260px;
-  background: #002855; 
+  position: relative;
   color: #FFD200; 
   padding: 25px 20px;
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 25px; /* Espaciado más amplio entre elementos */
   box-shadow: 2px 0 10px rgba(0,0,0,0.2);
 }
 
@@ -91,12 +95,15 @@ export default {
   text-align: center;
   font-weight: 600;
   color: #FFD200;
+  background: rgba(2, 7, 69, 0.7); /* Fondo azul institucional semitransparente solo para el título */
+  border-radius: 10px;
+  padding: 12px 0;
 }
 
 .menu button {
-  background: rgba(255,255,255,0.1);
+  background: rgba(2, 7, 69, 0.7);
   border: none;
-  color: #fff;
+  color: #ffffff;
   padding: 12px 15px;
   text-align: left;
   border-radius: 8px;
@@ -114,14 +121,19 @@ export default {
   transform: translateX(5px);
 }
 
+.menu div {
+  display: flex;
+  flex-direction: column;
+  gap: 22px; 
+}
+
 /* Área de contenido */
 .views {
   flex: 1;
   padding: 40px;
-  background-color: #F9F9F9; 
+  background-color: transparent; /* Elimina el fondo blanco */
   overflow-y: auto;
-  border-radius: 20px 0 0 20px;
-  box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
+  border-radius: 20px 0 0 10px;
 }
 
 /* Login */
@@ -131,15 +143,29 @@ export default {
   justify-content: center;
   height: 100vh;
   background: linear-gradient(135deg, #002855, #001B40);
+  position: center;
+}
+
+.login-container::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: url('/src/views/img/backgroundUNI.jpg') no-repeat center center;
+  background-size: cover;
+  opacity: 0.32;
+  z-index: 0;
 }
 
 .login-card {
+  position: relative;
+  z-index: 1;
   background: #fff;
-  padding: 40px 30px;
+  padding: 40px 20px;
   border-radius: 15px;
   box-shadow: 0 10px 25px rgba(0,0,0,0.2);
   text-align: center;
   width: 320px;
+  align-items: center;
 }
 
 .login-card h2 {
@@ -149,7 +175,7 @@ export default {
 }
 
 .login-card input {
-  width: 100%;
+  width: 90%;
   padding: 12px;
   margin: 10px 0;
   border-radius: 8px;
@@ -203,6 +229,8 @@ export default {
 
 .btn-exit:hover {
   background: #c0392b;
+
+
 }
 </style>
 

@@ -35,7 +35,7 @@
 
     <!-- Leyenda -->
     <section class="leyenda">
-      <span class="chip" v-for="(color, key) in colores" :key="key" :style="{ background: color }">
+      <span class="chip chip-blanco" v-for="(color, key) in colores" :key="key" :style="{ background: color }">
         Semestre {{ key }}
       </span>
     </section>
@@ -66,7 +66,7 @@
                     :style="estiloBloque(bloque)"
                     :title="tooltip(bloque)"
                   >
-                    <header class="bloque-titulo">{{ bloque.materia }}</header>
+                      <header class="bloque-titulo">{{ bloque.materia }}</header>
                     <div class="bloque-detalles">
                       <span>👨‍🏫 {{ bloque.docente }}</span>
                       <span>👥 {{ bloque.grupo }} · S{{ bloque.semestre }}</span>
@@ -106,7 +106,7 @@ export default {
     return {
       diasSemana: ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"],
       semestres: [1,2,3,4,5,6,7,8,9,10],
-      grupos: ["Grupo 101", "Grupo 102"],
+      grupos: ["Grupo A", "Grupo B"],
       filtro: { semestre: "", grupo: "" },
       busqueda: "",
       colores: {
@@ -131,8 +131,13 @@ export default {
     bloquesFiltradosTodos() {
       const termino = this.busqueda.trim().toLowerCase();
       return this.bloques.filter(b => {
-        const coincideSem = this.filtro.semestre ? b.semestre === Number(this.filtro.semestre) : true;
-        const coincideGrupo = this.filtro.grupo ? b.grupo === this.filtro.grupo : true;
+        // Comparación de semestre como número
+        const coincideSem = this.filtro.semestre ? Number(b.semestre) === Number(this.filtro.semestre) : true;
+        // Comparación de grupo insensible a mayúsculas/minúsculas y espacios
+        const grupoFiltro = this.filtro.grupo.trim().toLowerCase();
+        const grupoBloque = String(b.grupo).trim().toLowerCase();
+        const coincideGrupo = grupoFiltro ? grupoBloque === grupoFiltro : true;
+        // Comparación de texto insensible a mayúsculas/minúsculas
         const coincideTexto = termino ? [b.materia, b.docente, b.grupo].some(v => String(v).toLowerCase().includes(termino)) : true;
         return coincideSem && coincideGrupo && coincideTexto;
       });
@@ -209,7 +214,8 @@ export default {
 select, input[type="text"] { padding: 8px 10px; border-radius: 8px; border: 1px solid #cbd5e1; background: #fff; min-width: 160px; outline: none; transition: box-shadow .2s, border-color .2s; }
 select:focus, input[type="text"]:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,.2); }
 .leyenda { display: flex; gap: 8px; flex-wrap: wrap; padding: 12px 20px; }
-.chip { display: inline-flex; align-items: center; gap: 6px; color: #0b1325; font-weight: 600; padding: 6px 10px; border-radius: 999px; box-shadow: 0 1px 0 rgba(0,0,0,.08) inset; }
+.chip { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; padding: 6px 10px; border-radius: 999px; box-shadow: 0 1px 0 rgba(0,0,0,.08) inset; }
+.chip-blanco { color: #fff !important; text-shadow: 0 1px 2px rgba(0,0,0,0.15); }
 .calendario { padding: 0 20px; }
 .tabla-horario { width: 100%; border-collapse: separate; border-spacing: 0; background: #fff; border-radius: 14px; overflow: hidden; box-shadow: 0 8px 24px rgba(2,6,23,.08); }
 .tabla-horario thead th { background: #0f172a; color: #fff; font-weight: 700; letter-spacing: .2px; padding: 12px; text-align: center; }
@@ -220,7 +226,7 @@ select:focus, input[type="text"]:focus { border-color: #3b82f6; box-shadow: 0 0 
 .hora .separador { opacity: .7; }
 .celda { height: 120px; }
 .celda-contenido { display: flex; flex-direction: column; gap: 8px; padding: 10px; min-height: 100%; background: linear-gradient(180deg, rgba(241,245,249,0.6), rgba(255,255,255,0)); }
-.bloque { display: grid; gap: 6px; background: #e2e8f0; border-left: 5px solid #64748b; border-radius: 10px; padding: 10px; box-shadow: 0 4px 10px rgba(2,6,23,.06); transition: transform .1s ease, box-shadow .1s ease; }
+.bloque { display: grid; gap: 6px; background: #e2e8f0; border-left: 5px solid #64748b; border-radius: 10px; padding: 10px; box-shadow: 0 4px 10px rgba(2,6,23,.06); transition: transform .1s ease, box-shadow .1s ease; word-break: break-word; min-height: 60px; height: auto; overflow: visible; }
 .bloque:hover { transform: translateY(-1px); box-shadow: 0 8px 18px rgba(2,6,23,.12); }
 .bloque-titulo { font-weight: 800; color: #0f172a; }
 .bloque-detalles { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 4px 10px; font-size: .85rem; color: #334155; }

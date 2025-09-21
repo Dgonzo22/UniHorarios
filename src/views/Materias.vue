@@ -172,8 +172,8 @@ export default {
 .btn-agregar, .btn {
   margin-top: 1rem;
   padding: 0.8rem;
-  background: #4e73df;
-  color: #fff;
+  background: hsl(212, 100%, 17%);
+  color: #ffD200;
   border: none;
   border-radius: 8px;
   cursor: pointer;
@@ -181,10 +181,52 @@ export default {
   transition: 0.3s;
 }
 .btn:hover { background: #3a56c4; }
-.tabla-container { overflow-x: auto; margin-top: 1rem; }
-.tabla { width: 100%; border-collapse: collapse; }
-th, td { border: 1px solid #e0e0e0; padding: 0.8rem; text-align: center; }
-th { background: #f8f9fa; color: #2c3e50; font-weight: bold; }
+.tabla-container {
+  overflow-x: auto;
+  margin-top: 1rem;
+}
+.tabla caption {
+  caption-side: top;
+  text-align: center;
+  margin-bottom: 18px; /* Espacio extra debajo del botón */
+}
+.btn {
+  margin-bottom: 0;
+}
+/* Colores institucionales para tablas modernas y legibles, sin brillo */
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 12px;
+  /* Quitar sombra */
+  box-shadow: none;
+  overflow: hidden;
+}
+/* Encabezado sin brillo ni amarillo, institucional y moderno */
+th {
+  background: #002855;
+  color: #ffD200;
+  font-weight: 700;
+  padding: 12px;
+  text-align: center;
+  border-bottom: 2px solid #f0f4f8;
+}
+td {
+  padding: 10px;
+  border-top: 1px solid #e5e7eb;
+  color: #222;
+  background: #fff;
+}
+tr:nth-child(even) td {
+  background: #f7fafc;
+}
+tr:hover td {
+  background: #e3f0ff;
+}
+th, td {
+  border: 1px solid #d1d5db;
+}
 .sin-registros { text-align: center; color: #7f8c8d; font-style: italic; }
 .acciones { display: flex; gap: 0.5rem; justify-content: center; }
 .btn.editar { background: #36b9cc; }

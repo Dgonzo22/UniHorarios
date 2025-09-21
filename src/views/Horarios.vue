@@ -97,7 +97,7 @@ export default {
       docenteSeleccionado: "",
       horaInicio: "",
       horaFin: "",
-      diasSemana: ["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"],
+      diasSemana: ["Lunes","Martes","Miércoles","Jueves","Viernes"],
       diasSeleccionados: [],
       fechaInicio: "",
       fechaFin: ""
