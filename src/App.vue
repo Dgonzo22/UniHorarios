@@ -39,12 +39,14 @@
 </template>
 
 <script>
+import { onMounted } from "vue";
+
 export default {
   name: 'App',
   data() {
     return {
       isValid: false,
-      user: 'davidggomez',
+      user: 'Admin',
       password: '123'
     };
   },
@@ -61,10 +63,20 @@ export default {
       console.log('Cerrando la aplicación...');
       window.electronAPI.closeApp(); // Requiere exponer esto en preload.js
     }
+  },
+  setup() {
+    onMounted(() => {
+      document.querySelectorAll("input").forEach(input => {
+        input.setAttribute("autocomplete", "off");
+        input.setAttribute("autocorrect", "off");
+        input.setAttribute("autocapitalize", "off");
+        input.setAttribute("spellcheck", "false");
+      });
+    });
   }
-  };
-  </script>
 
+  };
+</script>
 <style scoped>
 /* Contenedor principal */
 .container {

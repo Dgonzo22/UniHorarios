@@ -1,105 +1,98 @@
 <template>
-  <div class="horarios-app">
-    <header class="header">
-      <img src="https://www.obraenmadera.com/wp-content/uploads/2021/08/08-cliente-uniminuto.jpg" alt="Uniminuto Logo" class="logo"/>
-      <div class="titulo">
-        <h1>Corporación Universitaria Minuto de Dios</h1>
-        <h2>Gestión de Horarios - Ingeniería de Sistemas</h2>
+  <div class="horarios-container">
+    <section class="panel">
+
+      <div class="box">
+        <h4>📘 Información Básica</h4>
+        <label>Semestre</label>
+        <select v-model="semestre">
+          <option disabled value="">Seleccionar</option>
+          <option v-for="n in 10" :key="n" :value="n">Semestre {{ n }}</option>
+        </select>
+
+        <label>Grupo</label>
+        <select v-model="grupo">
+          <option disabled value="">Seleccionar</option>
+          <option v-for='g in ["A","B", "C","D","E"]' :key="'grupo ' + g" :value="'grupo ' + g">{{ "grupo " + g }}</option>
+        </select>
+
+        
+        <label>periodo</label>
+        <input type="text" v-model="periodo" />
       </div>
-    </header>
-    <div class="horarios-container">
-      <!-- Panel Izquierdo -->
-      <section class="panel">
-        <h3>Nuevo Horario</h3>
 
-        <div class="box">
-          <h4>📘 Información Básica</h4>
-          <label>Semestre</label>
-          <select v-model="semestre">
-            <option disabled value="">Seleccionar</option>
-            <option v-for="n in 10" :key="n" :value="n">Semestre {{ n }}</option>
-          </select>
+      <div class="box">
+        <h4>📖 Información de la Materia</h4>
+        <label>Materia</label>
+        <select v-model="materiaSeleccionada">
+          <option disabled value="">Seleccionar</option>
+          <option v-for="m in materias" :key="m.ID_MATERIA" :value="m">{{ m.NOMBRE }}</option>
+        </select>
 
-          <label>Grupo</label>
-          <select v-model="grupo">
-            <option disabled value="">Seleccionar</option>
-            <option v-for='g in ["A","B", "C","D","E"]' :key="'grupo ' + g" :value="'grupo ' + g">{{ "grupo " + g }}</option>
-          </select>
+        <label>Docente</label>
+        <select v-model="docenteSeleccionado">
+          <option disabled value="">Seleccionar</option>
+          <option v-for="docente in docentes" 
+            :key="docente.ID_DOCENTE" 
+            :value="docente">{{ docente.NOMBRE }}</option>
+        </select>
 
-          <label>periodo</label>
-          <input type="text" v-model="periodo" />
-          
-        </div>
+      </div>
+    </section>
 
-        <div class="box">
-          <h4>📖 Información de la Materia</h4>
-          <label>Materia</label>
-          <select v-model="materiaSeleccionada">
-            <option disabled value="">Seleccionar</option>
-            <option v-for="m in materias" :key="m.ID_MATERIA" :value="m">{{ m.NOMBRE }}</option>
-          </select>
+    <!-- Panel Derecho -->
+    <section class="panel">
+      <h3>Configuración de Horario</h3>
 
-          <label>Docente</label>
-          <select v-model="docenteSeleccionado">
-            <option disabled value="">Seleccionar</option>
-            <option v-for="docente in docentes" 
-              :key="docente.ID_DOCENTE" 
-              :value="docente">{{ docente.NOMBRE }}</option>
-          </select>
+      <div class="box">
+        <h4>⏰ Horas y Días</h4>
 
-        </div>
-      </section>
+        <label>Hora Inicio</label>
+        <input type="time" v-model="horaInicio" />
 
-      <!-- Panel Derecho -->
-      <section class="panel">
-        <h3>Configuración de Horario</h3>
+        <label>Hora Fin</label>
+        <input type="time" v-model="horaFin" />
 
-        <div class="box">
-          <h4>⏰ Horas y Días</h4>
+        <label>Días de la Semana</label>
+        <select v-model="diasSeleccionados" multiple>
+          <option v-for="dia in diasSemana" :key="dia" :value="dia">{{ dia }}</option>
+        </select>
+      </div>
 
-          <label>Hora Inicio</label>
-          <input type="time" v-model="horaInicio" />
+    </section>
+    <section>
 
-          <label>Hora Fin</label>
-          <input type="time" v-model="horaFin" />
+      <div class="box vista-previa">
+        <h4>Vista Previa de la Clase</h4>
+        <p><strong>Materia:</strong> {{ materiaSeleccionada?.NOMBRE || '' }}</p>
+        <p><strong>Docente:</strong> {{ docenteSeleccionado?.NOMBRE || '' }}</p>
+        <p><strong>Horario:</strong> {{ horaInicio }} - {{ horaFin }}</p>
+        <p><strong>Días:</strong> {{ diasSeleccionados.join(', ') }}</p>
+        <p><strong>Grupo:</strong> {{ grupo }}</p>
+        <p><strong>Semestre:</strong> {{ semestre }}</p>
+      </div>
 
-          <label>Días de la Semana</label>
-          <select v-model="diasSeleccionados" multiple>
-            <option v-for="dia in diasSemana" :key="dia" :value="dia">{{ dia }}</option>
-          </select>
-        </div>
-
-        <div class="box vista-previa">
-          <h4>Vista Previa de la Clase</h4>
-          <p><strong>Materia:</strong> {{ materiaSeleccionada?.NOMBRE || '' }}</p>
-          <p><strong>Docente:</strong> {{ docenteSeleccionado?.NOMBRE || '' }}</p>
-          <p><strong>Horario:</strong> {{ horaInicio }} - {{ horaFin }}</p>
-          <p><strong>Días:</strong> {{ diasSeleccionados.join(', ') }}</p>
-          <p><strong>Grupo:</strong> {{ grupo }}</p>
-          <p><strong>Semestre:</strong> {{ semestre }}</p>
-        </div>
-
-        <div class="acciones">
-          <button class="restablecer" @click="resetFormulario">🔄 Restablecer</button>
-          <button class="validar" @click="validarHorario">✔️ Validar</button>
-          <button class="guardar" @click="guardarHorario">💾 Guardar</button>
-        </div>
-      </section>
-    </div>
+      <div class="acciones">
+        <button class="restablecer" @click="resetFormulario">🔄 Restablecer</button>
+        <button class="validar" @click="validarHorario">✔️ Validar</button>
+        <button class="guardar" @click="guardarHorario">💾 Guardar</button>
+      </div>
+    </section>
   </div>
 </template>
-
 <script>
 export default {
+  name: "ComFormHorario",
   props: {
-
+    id_Horario: {
+      type: String,
+      required: true,
+    },
   },
-  name: "Horarios",
   data() {
     return {
-      semestre: "",
-
       grupo: "",
+      semestre: "",
       grupos: ["Grupo A", "Grupo B"],
       materias: [],
       materiaSeleccionada: "",
@@ -115,17 +108,23 @@ export default {
       fechaFin: ""
     };
   },
-  async created() {
-    let semestre = "1"
-
-    if (new Date().getMonth() + 1 >= 7) {
-      semestre = "2"
-    }
-
-    this.periodo = new Date().getFullYear().toString() + "-"+semestre;
+  async mounted() {
+    let registroHorario = await window.electronAPI.invoke("getHorarioById", this.id_Horario);
 
     await this.cargarMaterias();
     await this.cargarDocentes();
+    
+    this.grupo = registroHorario.GRUPO;
+    this.semestre = registroHorario.SEMESTRE;
+    this.horaInicio = registroHorario.HORAINICIO?.slice(0,5) || "";
+    this.horaFin = registroHorario.HORAFINAL?.slice(0,5) || "";
+
+    this.periodo = registroHorario.PERIODO;
+    this.diasSeleccionados = [registroHorario.DIA];
+
+    this.materiaSeleccionada = this.materias.find(m => m.ID_MATERIA === registroHorario.ID_MATERIA) || "";
+    this.docenteSeleccionado = this.docentes.find(d => d.ID_DOCENTE === registroHorario.ID_DOCENTE) || "";
+
   },
   methods: {
     async cargarMaterias() {
@@ -153,6 +152,7 @@ export default {
         ///validacion de conflictos
         for (const dia of this.diasSeleccionados) {
           const conflicto = horariosExistentes.find(h =>
+            h.ID_HORARIO !== this.id_Horario && // excluir validacion del mismo horario
             h.GRUPO === this.grupo &&          
             h.DIA === dia &&                   
             !(
@@ -168,7 +168,8 @@ export default {
         }
 
         const horarioGuardado = await window.electronAPI.invoke(
-          "insertHorario",
+          "updateHorario",
+          this.id_Horario,
           this.semestre,
           this.grupo,
           this.horaInicio,
@@ -206,14 +207,10 @@ export default {
 </script>
 
 <style scoped>
-.horarios-app {
-  background: #003366;
-  min-height: 100vh;
-}
 .header {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 10px;
   background: #002244;
   color: #fff;
   padding: 12px 20px;
@@ -238,9 +235,12 @@ export default {
   color: #facc15;
 }
 .horarios-container {
+  background: #003366;
   display: flex;
+  border-radius: 8px;
   gap: 20px;
-  padding: 20px;
+  height: auto;
+  padding: 10px;
   color: #fff;
 }
 .panel {
@@ -253,7 +253,7 @@ export default {
 }
 .box {
   background: white;
-  padding: 12px;
+  padding: 10px;
   margin-bottom: 16px;
   border-radius: 6px;
   border: 1px solid #ddd;
@@ -273,6 +273,7 @@ select {
 }
 .vista-previa {
   background: #fffbea;
+  color: black;
   border-left: 4px solid #facc15;
 }
 .acciones {

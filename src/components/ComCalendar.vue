@@ -16,20 +16,23 @@
     </div>
 
     <!-- Materias -->
-    <div v-for="(materia, i) in materias"
+    <ComMateria v-for="(materia, i) in materias"
          :key="i"
-         class="box calendario materia"
+         :materia="materia"
+         class="box"
          :style="{
-           gridColumn: getDiaColumna(materia.dia),
-           gridRow: calcularDuracion(materia.horaInicio, materia.horaFinal)
-         }">
-      {{ materia.materia }} ({{ materia.horaInicio }} - {{ materia.horaFinal }})
-    </div>
+           gridColumn: getDiaColumna(materia.DIA),
+           gridRow: calcularDuracion(materia.HORAINICIO, materia.HORAFINAL)
+         }"
+    />
   </div>
 </template>
 
 <script>
+import ComMateria from './ComMateria.vue'
+
 export default {
+  components: { ComMateria },
   name: 'ComCalendar',
   props: {
     materias: {
@@ -93,9 +96,4 @@ export default {
   text-align: center;
 }
 
-.materia {
-  background: #e0f2fe;
-  border: 2px solid #3b82f6;
-  border-radius: 6px;
-}
 </style>

@@ -50,7 +50,7 @@ export default {
 .dialog {
   background: white;
   border-radius: 10px;
-  width: 400px;
+  width: auto;
   max-width: 90%;
   box-shadow: 0 4px 10px rgba(0,0,0,0.3);
   animation: fadeIn 0.3s ease;

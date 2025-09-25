@@ -2,7 +2,11 @@ import { app, BrowserWindow } from 'electron';
 import path from 'node:path';
 import started from 'electron-squirrel-startup';
 import { ipcMain } from 'electron';
-import conectBD from './conectBD/conectBD.js';
+import Events from './conectBD/events.js';
+
+
+Events.createEvents();
+
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (started) {
@@ -17,7 +21,10 @@ const createWindow = () => {
     height: 700,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
-      contextIsolation: true
+      contextIsolation: true,
+      nodeIntegration: true,
+      contextIsolation: true,
+      devTools: true,
     },
   });
 
@@ -31,199 +38,6 @@ const createWindow = () => {
   // Open the DevTools.
   mainWindow.webContents.openDevTools();
 };
-
-ipcMain.handle("checkLogin", async (event, user, password) => {
-  try {
-    const result = await conectBD.checkLogin(user, password);
-    return result; // esto irá al renderer
-  } catch (err) {
-    console.error(err);
-    return null;
-  }
-});
-ipcMain.handle("getMaterias",async(event) => {
-  try {
-    const result = await conectBD.getMaterias();
-    return result
-  }catch(error){
-    console.log(error);
-    return null
-  }
-})
-ipcMain.handle("insertMateria",async(event, nombre,NRC,creditos)=> {
-  try {
-    const result = await conectBD.insertMateria(nombre,NRC,creditos);
-    return result
-  }catch(error){
-    console.log(error);
-    return null
-  }
-});
-ipcMain.handle("deleteMateria", async(event, idMateria) => {
-  try {
-    const result = await conectBD.deleteMateria(idMateria)
-  }catch(error){
-    console.log(error);
-    return null
-  }
-})
-ipcMain.handle("updateMateria", async (event, idMateria, nombre, NRC, creditos) => {
-  try {
-    const result = await conectBD.updateMateria(idMateria, nombre, NRC, creditos);
-    return result;
-  } catch (error) {
-    console.error("Error en updateMateria:", error);
-    return null;
-  }
-});
-
-ipcMain.handle("getDocentes",async(event) => {
-  try {
-    const result = await conectBD.getDocentes();
-    return result
-  }catch(error){
-    console.log(error);
-    return null
-  }
-})
-ipcMain.handle("insertDocente",async(event, nombre, correo, celular, perfil)=> {
-  try {
-    const result = await conectBD.insertDocente(nombre, correo, celular, perfil);
-    return result
-  }catch(error){
-    console.log(error);
-    return null
-  }
-})
-ipcMain.handle("deleteDocente", async(event, idDocente) => {
-  try {
-    const result = await conectBD.deleteDocente(idDocente)
-  }catch(error){
-    console.log(error);
-    return null
-  }
-})
-ipcMain.handle("updateDocente", async (event, idDocente, nombre, correo, celular, perfil) => {
-  try {
-    const result = await conectBD.updateDocente(idDocente, nombre, correo, celular, perfil);
-    return result;
-  } catch (error) {
-    console.log(error);
-    return null;
-  }
-});
-/////////////////////////////////////////// Horarios
-ipcMain.handle("getHorarios", async (event) => {
-  try {
-    const result = await conectBD.getHorarios();
-    return result;
-  } catch (error) {
-    console.log(error);
-    return null;
-  }
-});
-ipcMain.handle('getHorariosConDias', async () => {
-  try {
-    const horarios = await conectBD.getHorarios(); // usa conectBD, no db
-    const horariosConDias = [];
-
-    for (const h of horarios) {
-      const dias = await conectBD.getDiasByHorario(h.ID_HORARIO); // igual, conectBD
-      horariosConDias.push({
-        ...h,
-        dias: dias.map(d => d.DIA)
-      });
-    }
-
-    return horariosConDias;
-  } catch (err) {
-    console.error(err);
-    throw err;
-  }
-});
-
-ipcMain.handle("insertHorario", async (event, semestre, grupo, horaInicio, horaFinal, periodo, anio, user, idDocente, idMateria) => {
-  try {
-    const result = await conectBD.insertHorario(semestre, grupo, horaInicio, horaFinal, periodo, anio, user, idDocente, idMateria);
-    return result;
-  } catch (error) {
-    console.log(error);
-    return null;
-  }
-});
-
-ipcMain.handle("updateHorario", async (event, idHorario, semestre, grupo, horaInicio, horaFinal, periodo, anio, user, idDocente, idMateria) => {
-  try {
-    const result = await conectBD.updateHorario(idHorario, semestre, grupo, horaInicio, horaFinal, periodo, anio, user, idDocente, idMateria);
-    return result;
-  } catch (error) {
-    console.log(error);
-    return null;
-  }
-});
-
-ipcMain.handle("deleteHorario", async (event, idHorario) => {
-  try {
-    const result = await conectBD.deleteHorario(idHorario);
-    return result;
-  } catch (error) {
-    console.log(error);
-    return null;
-  }
-});
-/////////////////////////////////////////// Dias
-ipcMain.handle("getDias", async (event) => {
-  try {
-    const result = await conectBD.getDias();
-    return result;
-  } catch (error) {
-    console.log(error);
-    return null;
-  }
-});
-
-ipcMain.handle("getDiasByHorario", async (event, idHorario) => {
-  // Obtener todos los días por ID_HORARIO
-  try {
-    const result = await conectBD.getDiasByHorario(idHorario);
-    return result;
-  } catch (error) {
-    console.error(error);
-    return null;
-  }
-});
-
-
-ipcMain.handle("insertDia", async (event, idHorario, dia) => {
-  try {
-    const result = await conectBD.insertDia(idHorario, dia);
-    return result;
-  } catch (error) {
-    console.log(error);
-    return null;
-  }
-});
-
-ipcMain.handle("updateDia", async (event, idDia, idHorario, dia) => {
-  try {
-    const result = await conectBD.updateDia(idDia, idHorario, dia);
-    return result;
-  } catch (error) {
-    console.log(error);
-    return null;
-  }
-});
-
-ipcMain.handle("deleteDia", async (event, idDia) => {
-  try {
-    const result = await conectBD.deleteDia(idDia);
-    return result;
-  } catch (error) {
-    console.log(error);
-    return null;
-  }
-});
-
 
 
 // This method will be called when Electron has finished

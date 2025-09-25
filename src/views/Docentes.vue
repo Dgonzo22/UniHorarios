@@ -1,58 +1,11 @@
 <template>
   <div class="docentes-container">
     <h2>👨‍🏫 Gestión de Docentes</h2>
-
-    <!-- Formulario de nuevo docente -->
-    <form class="form-docente" @submit.prevent="agregarDocente">
-      <div class="input-group">
-        <label for="idIdentificacion">ID Profesor:</label>
-      <input
-        id="idIdentificacion"
-        type="number"
-        v-model="nuevoDocente.ID_IDENTIFICACION"
-        @input="limitIdLength('nuevoDocente')"
-        required
-        placeholder="Máx. 6 dígitos"
-      />
-    </div>
-
-      <div class="input-group">
-        <label for="nombre">Nombre:</label>
-        <input
-          id="nombre"
-          type="text"
-          v-model="nuevoDocente.NOMBRE"
-          maxlength="30"
-          required
-          placeholder="Máx. 30 caracteres"
-        />
-      </div>
-
-      <div class="input-group">
-        <label for="correo">Correo:</label>
-        <input
-          id="correo"
-          type="email"
-          v-model="nuevoDocente.CORREO"
-          placeholder="ejemplo@correo.com"
-        />
-      </div>
-
-      <div class="input-group">
-        <label for="perfil">Perfil:</label>
-        <input
-          id="perfil"
-          type="text"
-          v-model="nuevoDocente.PERFIL"
-          placeholder="Perfil del docente"
-        />
-      </div>
-
-      <button type="submit" class="btn-agregar">➕ Agregar Docente</button>
-    </form>
-
     <!-- Tabla de docentes -->
     <table class="tabla-docentes">
+      <caption>
+        <button @click="openAddDocente = true" class="btn-agregar">➕ Agregar Nuevo Docente</button>
+      </caption>
       <thead>
         <tr>
           <th>ID Profesor</th>
@@ -77,10 +30,13 @@
     </table>
 
     <!-- Modal de edición -->
-    <div v-if="openEditDocente" class="modal">
+    <ComDialog 
+      :visible="openEditDocente"
+      class="modal"
+      @closeDialog="openEditDocente = false"
+      title="✏️ Editar Docente"
+    >
       <div class="modal-content">
-        <h3>✏️ Editar Docente</h3>
-
         <div class="input-group">
           <label>ID Profesor:</label>
           <input
@@ -117,47 +73,89 @@
           <button @click="openEditDocente = false" class="btn-cancelar">❌ Cancelar</button>
         </div>
       </div>
-    </div>
+    </ComDialog>
+    <!-- Formulario de nuevo docente -->
+     <ComDialog title="➕ Agregar Nuevo Docente"
+      :visible="openAddDocente"
+      @closeDialog="openAddDocente = false"
+     >
+      <div class="modal-content">
+
+        <div class="input-group">
+          <label for="idIdentificacion">ID Profesor:</label>
+        <input
+          id="idIdentificacion"
+          type="text"
+          inputmode="numeric"
+          maxlength="6"
+          v-model="nuevoDocente.ID_IDENTIFICACION"
+          required
+          placeholder="Id del profesor (Máx. 6 dígitos)"
+          oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0,6)"
+        />
+      </div>
+  
+        <div class="input-group">
+          <label for="nombre">Nombre:</label>
+          <input
+            id="nombre"
+            type="text"
+            v-model="nuevoDocente.NOMBRE"
+            maxlength="30"
+            required
+            placeholder="Máx. 30 caracteres"
+          />
+        </div>
+  
+        <div class="input-group">
+          <label for="correo">Correo:</label>
+          <input
+            id="correo"
+            type="email"
+            v-model="nuevoDocente.CORREO"
+            placeholder="ejemplo@correo.com"
+          />
+        </div>
+  
+        <div class="input-group">
+          <label for="perfil">Perfil:</label>
+          <input
+            id="perfil"
+            type="text"
+            v-model="nuevoDocente.PERFIL"
+            placeholder="Perfil del docente"
+          />
+        </div>
+  
+        <button type="submit" class="btn-agregar" @click="agregarDocente">➕ Agregar Docente</button>
+      </div>
+
+     </ComDialog>
   </div>
 </template>
 
 
 
 <script>
+import ComDialog from "../components/ComDialog.vue";
+
 export default {
   name: "Docentes",
+  components: { ComDialog },
   data() {
-  return {
-    docentes: [],
-    nuevoDocente: { ID_IDENTIFICACION: "", NOMBRE: "", CORREO: "", PERFIL: "" },
-    docenteEdit: { ID_DOCENTE: null, ID_IDENTIFICACION: "", NOMBRE: "", CORREO: "", PERFIL: "" },
-    openEditDocente: false,
-  };
-},
+    return {
+      docentes: [],
+      nuevoDocente: { ID_IDENTIFICACION: "", NOMBRE: "", CORREO: "", PERFIL: "" },
+      docenteEdit: { ID_DOCENTE: null, ID_IDENTIFICACION: "", NOMBRE: "", CORREO: "", PERFIL: "" },
+      openEditDocente: false,
+      openAddDocente: false
+    };
+  },
 
   created() {
     this.cargarDocentes();
   },
   methods: {
-          limitIdLength(objKey) {
-      let value = this[objKey].ID_IDENTIFICACION?.toString() || "";
-      // 1️⃣ Quitar todo lo que no sea dígito
-      value = value.replace(/\D/g, "");
-      // 2️⃣ Limitar a 6 dígitos
-      if (value.length > 6) {
-      value = value.slice(0, 6);
-      }
-      // 3️⃣ Convertir a número
-      let num = parseInt(value, 10);
-      // 4️⃣ Validar que sea mínimo 1
-      if (isNaN(num) || num < 1) {
-      num = 0; // siempre inicia desde 1
-      } 
-
-      // 5️⃣ Guardar
-      this[objKey].ID_IDENTIFICACION = num.toString();
-      },
-
       async agregarDocente() {
       // Validar que todos los campos estén llenos
       if (!this.nuevoDocente.ID_IDENTIFICACION ||
@@ -167,30 +165,27 @@ export default {
         alert('Por favor, completa todos los campos antes de registrar el docente.');
         return;
       }
-      // Validación previa de ID y nombre
-      if (!/^[0-9]{1,6}$/.test(this.nuevoDocente.ID_IDENTIFICACION)) {
-        alert('❌ El ID debe ser un número de máximo 6 dígitos.');
-        return;
-      }
-      if (this.nuevoDocente.NOMBRE.length > 30) {
-        alert('❌ El nombre no puede superar los 30 caracteres.');
-        return;
-      }
+
 
       await window.electronAPI.invoke(
         "insertDocente",
-        this.nuevoDocente.ID_IDENTIFICACION,
+        Number(this.nuevoDocente.ID_IDENTIFICACION),
         this.nuevoDocente.NOMBRE,
         this.nuevoDocente.CORREO,
         this.nuevoDocente.PERFIL
       );
+
       this.cargarDocentes();
-      this.nuevoDocente = { ID_IDENTIFICACION: "", NOMBRE: "", CORREO: "", PERFIL: "" }; // ✅ corregido
-      alert("✅ Docente agregado con éxito.");
+
+      this.nuevoDocente.ID_IDENTIFICACION = "" 
+      this.nuevoDocente.NOMBRE = ""
+      this.nuevoDocente.CORREO = ""
+      this.nuevoDocente.PERFIL = ""
+
+      this.openAddDocente = false;
     },
     async cargarDocentes() {
-      const result = await window.electronAPI.invoke("getDocentes");
-      this.docentes = result || [];
+      this.docentes = await window.electronAPI.invoke("getDocentes") || [];
     },
     openDialogEdit(docente) {
       this.openEditDocente = true;
@@ -198,15 +193,6 @@ export default {
     },
     async actualizarDocente() {
       if (!confirm("¿Seguro que quieres guardar los cambios en este docente?")) return;
-
-      if (!/^[0-9]{1,6}$/.test(this.docenteEdit.ID_IDENTIFICACION)) {
-        alert("❌ El ID debe ser un número de máximo 6 dígitos.");
-        return;
-      }
-      if (this.docenteEdit.NOMBRE.length > 30) {
-        alert("❌ El nombre no puede superar los 30 caracteres.");
-        return;
-      }
 
       await window.electronAPI.invoke(
         "updateDocente",
@@ -347,30 +333,6 @@ button {
   background: #c82333;
 }
 
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.6);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.modal-content {
-  background: white;
-  padding: 25px;
-  border-radius: 10px;
-  width: 400px;
-}
-
-.modal-actions {
-  margin-top: 15px;
-  display: flex;
-  justify-content: space-between;
-}
 
 .btn-guardar {
   background: #007bff;

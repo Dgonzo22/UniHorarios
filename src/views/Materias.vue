@@ -5,19 +5,53 @@
     <!-- Modal para agregar/editar -->
     <ComDialog 
       :visible="openNewMateria"
-      @closeDialog="cerrarDialog"
+      class="modal"
+      @closeDialog="openNewMateria = false"
+      title="📝 Nueva Materia"
     >
-      <form @submit.prevent="guardarMateria" class="form">
-        <div class="form-grid">
-          <input v-model="nuevaMateria.nombre" placeholder="Nombre de la materia" required />
-          <input v-model="nuevaMateria.nrc" placeholder="NRC" required />
-          <input v-model="nuevaMateria.creditos" type="number" placeholder="Número de créditos" min="1" max="3" required />
+      <div class="modal-content">
+        <div class="input-group">
+          <label>Nombre de la materia:</label>
+          <input 
+            type="text" 
+            v-model="nuevaMateria.nombre" 
+            placeholder="Nombre de la materia" 
+            required 
+          />
         </div>
-        <button type="submit" class="btn-agregar">
-          {{ editandoIndex !== null ? "💾 Actualizar Materia" : "➕ Agregar Materia" }}
-        </button>
-      </form>
+
+        <div class="input-group">
+          <label>NRC:</label>
+          <input 
+            type="text" 
+            v-model="nuevaMateria.nrc" 
+            placeholder="NRC" 
+            required 
+          />
+        </div>
+
+        <div class="input-group">
+          <label>Número de créditos:</label>
+          <input 
+            type="number" 
+            v-model="nuevaMateria.creditos" 
+            placeholder="Número de créditos" 
+            min="1" 
+            max="3" 
+            required 
+          />
+        </div>
+
+        <div class="modal-actions">
+          <button type="submit" 
+            @click="guardarMateria" class="btn-guardar">
+            ➕ Guardar Materia
+          </button>
+          <button @click="openNewMateria = false" class="btn-cancelar">❌ Cancelar</button>
+        </div>
+      </div>
     </ComDialog>
+
 
     <!-- Tabla -->
     <div class="tabla-container">
@@ -83,11 +117,7 @@ export default {
       this.openNewMateria = true;
     },
 
-    cerrarDialog() {
-      this.openNewMateria = false;
-      this.nuevaMateria = { nombre: "", nrc: "", creditos: "" };
-      this.editandoIndex = null;
-    },
+
 
     async guardarMateria() {
       if (this.editandoIndex === null) {
@@ -110,7 +140,7 @@ export default {
         );
       }
       this.cargarMaterias();
-      this.cerrarDialog();
+      this.openNewMateria = false;
     },
 
     editarMateria(index) {
@@ -136,6 +166,31 @@ export default {
 
 
 <style scoped>
+.input-group {
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+input {
+  padding: 8px;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+}
+
+button {
+  cursor: pointer;
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: none;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
 .materias {
   padding: 2rem;
   max-width: 1100px;
@@ -193,6 +248,16 @@ export default {
 .btn {
   margin-bottom: 0;
 }
+
+.btn-guardar {
+  background: #007bff;
+  color: white;
+}
+
+.btn-guardar:hover {
+  background: #0056b3;
+}
+
 /* Colores institucionales para tablas modernas y legibles, sin brillo */
 .tabla {
   width: 100%;
