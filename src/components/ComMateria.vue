@@ -19,7 +19,6 @@
         <div><strong>Perfil:</strong></div><div>{{ infoDocente?.PERFIL }}</div>
         <div><button class="btn" @click="showDialogEdit = true">Editar</button></div>
         <div><button class="btn red" @click="eliminarHorario">Eliminar</button></div>
-
       </div>
       <ComDialog :visible="showDialogEdit"
         title="Editar Horario"
@@ -100,6 +99,10 @@ export default {
 </script>
 
 <style scoped>
+.materia-card{
+  height: 100%;
+}
+
 .materia-card {
   background: linear-gradient(135deg, #3b82f6, #2563eb);
   color: white;

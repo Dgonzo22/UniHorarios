@@ -75,6 +75,8 @@ export default {
 
 .box {
   border: 1px solid #ccc;
+  height: 100%;
+
 }
 
 .cabeceza {
