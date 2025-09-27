@@ -21,6 +21,16 @@ function createEvents(){
     }
   });
 
+  ipcMain.handle("getHorariosJoinsMateriasDocentes", async (event) => {
+    try {
+      const result = await conectBD.getHorarios();
+      return result;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  });
+
   ipcMain.handle('getHorariosConDias', async () => {
     try {
       const horarios = await conectBD.getHorarios(); // usa conectBD, no db
@@ -40,6 +50,9 @@ function createEvents(){
       throw err;
     }
   });
+
+
+  
   
   ipcMain.handle("insertHorario", async (event, semestre, grupo, horaInicio, horaFinal, periodo, dia, idDocente, idMateria) => {
     try {

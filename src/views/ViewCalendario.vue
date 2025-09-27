@@ -1,5 +1,10 @@
 <template>
   <div>
+    <div>
+      <h1>Filtros</h1>
+      <input type="checkbox" id="filtroDocente" name="filtroDocente" value="Docente">
+      <input type="text" placeholder="Buscar por docente"/> 
+    </div>
     <ComCalendar  :materias="listaMaterias"/>
   </div>
 </template>
@@ -15,6 +20,7 @@ export default {
     }
   },
   async created(){
+
     this.listaMaterias = await window.electronAPI.invoke("getHorarios");
   }
 }

@@ -245,6 +245,21 @@ function getHorarios() {
     });
   });
 }
+function getHorariosJoinsMateriasDocentes() {
+  return new Promise((resolve, reject) => {
+    db.all(`
+      SELECT H.ID_HORARIO, H.SEMESTRE, H.GRUPO, H.HORAINICIO, H.HORAFINAL, H.PERIODO, H.ANIO,
+             D.DIA, M.NOMBRE AS NOMBRE_MATERIA, DOC.NOMBRE AS NOMBRE_DOCENTE
+      FROM HORARIOS H
+      LEFT JOIN MATERIAS M ON H.ID_MATERIA = M.ID_MATERIA
+      LEFT JOIN DOCENTES DOC ON H.ID_DOCENTE = DOC.ID_DOCENTE
+      LEFT JOIN DIAS D ON H.ID_HORARIO = D.ID_HORARIO
+    `, [], (err, rows) => {
+      if(err) reject(err);
+      else resolve(rows);
+    });
+  });
+}
 
 function getHorarioById(idHorario) {
   return new Promise((resolve, reject) => {
@@ -381,6 +396,7 @@ export default {
   deleteDocente,
   //horarios
   getHorarios,
+  getHorariosJoinsMateriasDocentes,
   getHorarioById,
   insertHorario,
   updateHorario,
