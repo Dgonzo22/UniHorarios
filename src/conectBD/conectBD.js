@@ -245,6 +245,7 @@ function getHorarios() {
     });
   });
 }
+
 function getHorariosJoinsMateriasDocentes() {
   return new Promise((resolve, reject) => {
     db.all(`
@@ -259,6 +260,55 @@ function getHorariosJoinsMateriasDocentes() {
       else resolve(rows);
     });
   });
+}
+
+function getHorarioFilter(SEMESTRE, GRUPO, CHECKPERIODO, PERIODO, CHECKDOCENTE, ID_DOCENTE, CHECKMATERIA, ID_MATERIA) {
+  return new Promise((resolve, reject) => {
+    let query = `
+      SELECT 
+        ID_HORARIO,
+        SEMESTRE,
+        GRUPO,
+        HORAINICIO,
+        HORAFINAL,
+        PERIODO,
+        DIA,
+        ID_DOCENTE,
+        ID_MATERIA
+      FROM HORARIOS
+    `;
+    let listData = [];
+    
+    //filtros obligatorios
+    query += " WHERE SEMESTRE = ?"; 
+    listData.push(SEMESTRE);
+    query += " AND GRUPO = ?";
+    listData.push(GRUPO);
+    
+    //filtros opcionales
+    if(CHECKPERIODO){
+      query += " AND PERIODO = ?";
+      listData.push(PERIODO);
+    }
+
+    if(CHECKDOCENTE){
+      query += " AND ID_DOCENTE = ?";
+      listData.push(ID_DOCENTE);
+    }
+
+    if (CHECKMATERIA) {
+      query += " AND ID_MATERIA = ?";
+      listData.push(ID_MATERIA);
+    }
+    console.log(query);
+    console.log(listData);
+    // Ejecutar la consulta
+    db.all(query, listData, (err, rows) => {
+      if (err) reject(err);
+      else resolve(rows);
+    });
+  });
+
 }
 
 function getHorarioById(idHorario) {
@@ -397,6 +447,7 @@ export default {
   //horarios
   getHorarios,
   getHorariosJoinsMateriasDocentes,
+  getHorarioFilter,
   getHorarioById,
   insertHorario,
   updateHorario,

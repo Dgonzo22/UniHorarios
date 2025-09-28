@@ -21,6 +21,16 @@ function createEvents(){
     }
   });
 
+  ipcMain.handle("getHorarioFilter", async (event, SEMESTRE, GRUPO, CHECKPERIODO, PERIODO, CHECKDOCENTE, ID_DOCENTE, CHECKMATERIA, ID_MATERIA) => {
+    try {
+      const result = await conectBD.getHorarioFilter(SEMESTRE, GRUPO, CHECKPERIODO, PERIODO, CHECKDOCENTE, ID_DOCENTE, CHECKMATERIA, ID_MATERIA);
+      return result;
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  })
+  
   ipcMain.handle("getHorariosJoinsMateriasDocentes", async (event) => {
     try {
       const result = await conectBD.getHorarios();
