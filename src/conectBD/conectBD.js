@@ -426,7 +426,9 @@ function deleteDia(idDia) {
   });
 }
 
+// al final de conectBD.js
 export default {
+  db,  // 👈 añade esto
   //usuarios
   checkLogin,
   getUsuarios,

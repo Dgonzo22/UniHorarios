@@ -3,6 +3,13 @@ import path from 'node:path';
 import started from 'electron-squirrel-startup';
 import { ipcMain } from 'electron';
 import Events from './conectBD/events.js';
+import { createEvents } from "./conectBD/Events/ValidarConflictos.js";
+
+
+app.whenReady().then(() => {
+  createWindow();
+  createEvents(); // <-- registra todos los handlers
+});
 
 
 Events.createEvents();

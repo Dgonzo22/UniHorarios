@@ -1,12 +1,17 @@
 <template>
   <div class="horarios-app">
     <header class="header">
-      <img src="https://www.obraenmadera.com/wp-content/uploads/2021/08/08-cliente-uniminuto.jpg" alt="Uniminuto Logo" class="logo"/>
+      <img
+        src="https://www.obraenmadera.com/wp-content/uploads/2021/08/08-cliente-uniminuto.jpg"
+        alt="Uniminuto Logo"
+        class="logo"
+      />
       <div class="titulo">
         <h1>Corporación Universitaria Minuto de Dios</h1>
         <h2>Gestión de Horarios - Ingeniería de Sistemas</h2>
       </div>
     </header>
+
     <div class="horarios-container">
       <!-- Panel Izquierdo -->
       <section class="panel">
@@ -23,12 +28,17 @@
           <label>Grupo</label>
           <select v-model="grupo">
             <option disabled value="">Seleccionar</option>
-            <option v-for='g in ["A","B", "C","D","E"]' :key="'grupo ' + g" :value="'grupo ' + g">{{ "grupo " + g }}</option>
+            <option
+              v-for='g in ["A","B","C","D","E"]'
+              :key="'grupo ' + g"
+              :value="'grupo ' + g"
+            >
+              {{ "grupo " + g }}
+            </option>
           </select>
 
-          <label>periodo</label>
+          <label>Periodo</label>
           <input type="text" v-model="periodo" />
-          
         </div>
 
         <div class="box">
@@ -36,17 +46,26 @@
           <label>Materia</label>
           <select v-model="materiaSeleccionada">
             <option disabled value="">Seleccionar</option>
-            <option v-for="m in materias" :key="m.ID_MATERIA" :value="m">{{ m.NOMBRE }}</option>
+            <option
+              v-for="m in materias"
+              :key="m.ID_MATERIA"
+              :value="m"
+            >
+              {{ m.NOMBRE }}
+            </option>
           </select>
 
           <label>Docente</label>
           <select v-model="docenteSeleccionado">
             <option disabled value="">Seleccionar</option>
-            <option v-for="docente in docentes" 
-              :key="docente.ID_DOCENTE" 
-              :value="docente">{{ docente.NOMBRE }}</option>
+            <option
+              v-for="docente in docentes"
+              :key="docente.ID_DOCENTE"
+              :value="docente"
+            >
+              {{ docente.NOMBRE }}
+            </option>
           </select>
-
         </div>
       </section>
 
@@ -65,7 +84,9 @@
 
           <label>Días de la Semana</label>
           <select v-model="diasSeleccionados" multiple>
-            <option v-for="dia in diasSemana" :key="dia" :value="dia">{{ dia }}</option>
+            <option v-for="dia in diasSemana" :key="dia" :value="dia">
+              {{ dia }}
+            </option>
           </select>
         </div>
 
@@ -91,16 +112,11 @@
 
 <script>
 export default {
-  props: {
-
-  },
   name: "Horarios",
   data() {
     return {
       semestre: "",
-
       grupo: "",
-      grupos: ["Grupo A", "Grupo B"],
       materias: [],
       materiaSeleccionada: "",
       docentes: [],
@@ -108,21 +124,16 @@ export default {
       horaInicio: "",
       horaFin: "",
       periodo: "",
-      dia: "",
-      diasSemana: ["Lunes","Martes","Miércoles","Jueves","Viernes"],
+      diasSemana: ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"],
       diasSeleccionados: [],
-      fechaInicio: "",
-      fechaFin: ""
     };
   },
   async created() {
-    let semestre = "1"
-
+    let semestre = "1";
     if (new Date().getMonth() + 1 >= 7) {
-      semestre = "2"
+      semestre = "2";
     }
-
-    this.periodo = new Date().getFullYear().toString() + "-"+semestre;
+    this.periodo = new Date().getFullYear().toString() + "-" + semestre;
 
     await this.cargarMaterias();
     await this.cargarDocentes();
@@ -135,38 +146,75 @@ export default {
     async cargarDocentes() {
       this.docentes = await window.electronAPI.invoke("getDocentes");
     },
-    validarHorario() {
-      if(!this.materiaSeleccionada || !this.docenteSeleccionado || this.diasSeleccionados.length === 0){
+
+    async validarHorario() {
+      if (
+        !this.materiaSeleccionada ||
+        !this.docenteSeleccionado ||
+        this.diasSeleccionados.length === 0
+      ) {
         alert("Complete todos los campos antes de validar ⚠️");
         return;
       }
-      alert("Validación correcta ✅");
+
+      for (const dia of this.diasSeleccionados) {
+        const resultado = await window.electronAPI.invoke(
+          "validarConflictosHorario",
+          {
+            idDocente: this.docenteSeleccionado.ID_DOCENTE,
+            idMateria: this.materiaSeleccionada.ID_MATERIA,
+            semestre: this.semestre,
+            grupo: this.grupo,
+            dia: dia,
+            horaInicio: this.horaInicio,
+            horaFinal: this.horaFin,
+            periodo: this.periodo,
+          }
+        );
+
+        if (resultado.conflicto) {
+          alert(`⚠️ ${resultado.mensaje}`);
+          return;
+        }
+      }
+
+      alert("✅ No se detectaron conflictos.");
     },
+
     async guardarHorario() {
       try {
-        if (!this.materiaSeleccionada || !this.docenteSeleccionado || this.diasSeleccionados.length === 0) {
+        if (
+          !this.materiaSeleccionada ||
+          !this.docenteSeleccionado ||
+          this.diasSeleccionados.length === 0
+        ) {
           alert("Complete todos los campos antes de guardar ⚠️");
           return;
         }
 
-        const horariosExistentes = await window.electronAPI.invoke("getHorarios");
-        ///validacion de conflictos
+        // Validar conflictos antes de guardar
         for (const dia of this.diasSeleccionados) {
-          const conflicto = horariosExistentes.find(h =>
-            h.GRUPO === this.grupo &&          
-            h.DIA === dia &&                   
-            !(
-              this.horaFin <= h.HORA_INICIO || 
-              this.horaInicio >= h.HORA_FINAL  
-            )
+          const resultado = await window.electronAPI.invoke(
+            "validarConflictosHorario",
+            {
+              idDocente: this.docenteSeleccionado.ID_DOCENTE,
+              idMateria: this.materiaSeleccionada.ID_MATERIA,
+              semestre: this.semestre,
+              grupo: this.grupo,
+              dia: dia,
+              horaInicio: this.horaInicio,
+              horaFinal: this.horaFin,
+              periodo: this.periodo,
+            }
           );
 
-          if (conflicto) {
-            alert(`⚠️ Conflicto detectado: ya existe una clase el ${dia} de ${conflicto.HORA_INICIO} a ${conflicto.HORA_FINAL}`);
-            return; 
+          if (resultado.conflicto) {
+            alert(`⚠️ ${resultado.mensaje}`);
+            return;
           }
         }
 
+        // Guardar si no hay conflictos
         const horarioGuardado = await window.electronAPI.invoke(
           "insertHorario",
           this.semestre,
@@ -183,10 +231,11 @@ export default {
           await window.electronAPI.invoke("insertDia", horarioGuardado.id, dia);
         }
 
-        alert("Horario guardado 💾");
+        alert("💾 Horario guardado correctamente.");
+        this.resetFormulario();
       } catch (err) {
         console.error(err);
-        alert("Error guardando horario ❌");
+        alert("❌ Error guardando el horario.");
       }
     },
 
@@ -198,14 +247,13 @@ export default {
       this.horaInicio = "";
       this.horaFin = "";
       this.diasSeleccionados = [];
-      this.fechaInicio = "";
-      this.fechaFin = "";
-    }
-  }
+    },
+  },
 };
 </script>
 
 <style scoped>
+/* --- Estilos idénticos al anterior --- */
 .horarios-app {
   background: #003366;
   min-height: 100vh;

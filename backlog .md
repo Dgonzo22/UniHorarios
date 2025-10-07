@@ -1,40 +1,19 @@
 * ANTES DE COMENZAR A PROGRAMAR HACER GIT PULL
 
 1) Santiago
+pendiente
 - el input de editar y actualizar horario se ve mal
         src\components\ComFormHorario.vue
         src\components\ComMateria.vue
 - mejora diseño
 
-* ANTES DE COMENZAR A PROGRAMAR HACER GIT PULL
-
-2) Santiago
-- agregar conflitos de docente
-- agregar conflitos de materias
-- agregar conflicto de semestre y grupo
-nuevo modulo que valide los conflictos
-
-* ANTES DE COMENZAR A PROGRAMAR HACER GIT PULL
-
-3) Gonzalo
-- obligado a buscar por semestre, PERIODO
-
-* ANTES DE COMENZAR A PROGRAMAR HACER GIT PULL
 
 
-4) Gonzalo
-- Filtros: 
-        SEMESTRE Obligatorio
-        GRUPO Obligatorio
-        PERIODO
-        ID_DOCENTE 
-        ID_MATERIA
-arhivo src\views\ViewCalendario.vue
-
-* ANTES DE COMENZAR A PROGRAMAR HACER GIT PULL
 
 
-5) 
+
+
+5) ERICK
 - alerta elimnar Horario
 - cuando elimine recarga horario
 - cuando elimine cerrar dialogos
