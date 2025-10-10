@@ -207,97 +207,162 @@ export default {
 </script>
 
 <style scoped>
+/* Encabezado */
 .header {
   display: flex;
   align-items: center;
   gap: 10px;
-  background: #002244;
+  background: #003366;
   color: #fff;
-  padding: 12px 20px;
+  padding: 15px 20px;
   border-bottom: 4px solid #facc15;
 }
+
 .logo {
   height: 50px;
 }
+
 .titulo {
   display: flex;
   flex-direction: column;
 }
+
 .header h1 {
-  font-size: 1.4rem;
+  font-size: 1.6rem;
   font-weight: bold;
   margin: 0;
 }
+
 .header h2 {
-  font-size: 1rem;
+  font-size: 1.1rem;
   font-weight: normal;
   margin: 0;
   color: #facc15;
 }
+
+/* Contenedor principal */
 .horarios-container {
   background: #003366;
   display: flex;
-  border-radius: 8px;
+  border-radius: 12px;
   gap: 20px;
-  height: auto;
-  padding: 10px;
+  padding: 20px;
   color: #fff;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
 }
+
+/* Paneles de formulario */
 .panel {
   flex: 1;
-  background: #f9fafb;
-  color: #000;
+  background: #ffffff;
+  color: #333;
   border-radius: 8px;
-  padding: 16px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
+
 .box {
-  background: white;
-  padding: 10px;
-  margin-bottom: 16px;
-  border-radius: 6px;
+  background: #fff;
+  padding: 12px;
+  margin-bottom: 20px;
+  border-radius: 8px;
   border: 1px solid #ddd;
 }
+
 label {
   display: block;
   font-weight: bold;
-  margin-top: 8px;
+  margin-top: 10px;
+  font-size: 0.95rem;
 }
+
 input,
 select {
   width: 100%;
-  padding: 6px;
-  margin-top: 4px;
-  border-radius: 4px;
+  padding: 10px;
+  margin-top: 6px;
+  border-radius: 8px;
   border: 1px solid #ccc;
+  font-size: 1rem;
+  background-color: #f9fafb;
+  transition: all 0.3s ease-in-out;
 }
+
+input:focus,
+select:focus {
+  border-color: #facc15;
+  outline: none;
+  box-shadow: 0 0 5px rgba(250, 194, 21, 0.7);
+}
+
+/* Vista previa */
 .vista-previa {
   background: #fffbea;
-  color: black;
-  border-left: 4px solid #facc15;
+  color: #333;
+  border-left: 5px solid #facc15;
+  padding: 20px;
+  border-radius: 8px;
 }
+
 .acciones {
   display: flex;
   justify-content: space-between;
   gap: 8px;
 }
+
 button {
   flex: 1;
-  padding: 10px;
+  padding: 12px;
+  font-size: 1rem;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
+  transition: background 0.3s ease-in-out;
 }
+
 .restablecer {
   background: #fbbf24;
   color: white;
 }
+
+.restablecer:hover {
+  background: #f59e0b;
+}
+
 .validar {
   background: #60a5fa;
   color: white;
 }
+
+.validar:hover {
+  background: #3b82f6;
+}
+
 .guardar {
   background: #34d399;
   color: white;
 }
+
+.guardar:hover {
+  background: #10b981;
+}
+
+select[multiple] {
+  height: auto;
+  min-height: 100px;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+/* Mejorar espaciado entre elementos */
+.box + .box {
+  margin-top: 20px;
+}
+
+label + input,
+label + select {
+  margin-top: 10px;
+}
 </style>
+

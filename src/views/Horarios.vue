@@ -16,7 +16,6 @@
       <!-- Panel Izquierdo -->
       <section class="panel">
         <h3>Nuevo Horario</h3>
-
         <div class="box">
           <h4>📘 Información Básica</h4>
           <label>Semestre</label>
@@ -232,7 +231,7 @@ export default {
         }
 
         alert("💾 Horario guardado correctamente.");
-        this.resetFormulario();
+    
       } catch (err) {
         console.error(err);
         alert("❌ Error guardando el horario.");
