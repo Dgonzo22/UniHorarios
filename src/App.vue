@@ -8,10 +8,9 @@
           <div style="position:relative;z-index:1;display:flex;flex-direction:column;height:100%;">
             <h2>📌 Menú Principal</h2>
             <button @click="$router.push('/docentes')">👨‍🏫 Docentes</button>
-            <button @click="$router.push('/horarios')">📅 Horarios</button>
+            <button @click="$router.push('/horarios')">📅 Carga De Horarios</button>
             <button @click="$router.push('/Materias')">📝 Materias</button>
-            <button @click="$router.push('/VistaDeHorario')">⌛ Vista de Horario</button>
-            <button @click="$router.push('/ViewCalendario')">⌛ Calendario</button>
+            <button @click="$router.push('/ViewCalendario')">⌛ Vista De Horario</button>
             <hr />
             <button class="btn-exit" @click="cerrarApp">❌ Salir del programa</button>
           </div>
