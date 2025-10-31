@@ -51,7 +51,7 @@
               :key="m.ID_MATERIA"
               :value="m"
             >
-              {{ m.NOMBRE }}
+              {{ m.NOMBRE }} - NRC: {{  m.NRC }}
             </option>
           </select>
 

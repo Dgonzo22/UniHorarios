@@ -76,7 +76,10 @@
     </div>
 
     <!-- Calendario -->
-    <ComCalendar :materias="listaMaterias"/>
+    <ComCalendar 
+    :materias="listaMaterias"
+    @recargarHorarios="cargarHorarios"
+    />
   </div>
 </template>
 
@@ -124,6 +127,9 @@ export default {
         this.checkmateria,
         this.id_materia
       );
+    },
+    async cargarHorarios() {
+      this.listaMaterias = await window.electronAPI.invoke("getHorarios")
     }
   }
 }

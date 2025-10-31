@@ -3,17 +3,17 @@
     <div class="calendario-container">
       <!-- Cabeceras -->
       <div v-for="(cabeza, i) in cabeceras"
-           :key="i"
-           class="celda cabecera"
-           :class="{ 'cabecera-hora': i === 0, 'cabecera-dia': i > 0 }">
+          :key="i"
+          class="celda cabecera"
+          :class="{ 'cabecera-hora': i === 0, 'cabecera-dia': i > 0 }">
         {{ cabeza }}
       </div>
 
       <!-- Horas en la primera columna -->
       <div v-for="(hora, i) in horas"
-           :key="i"
-           class="celda hora"
-           :style="{ gridRow: (i+2) }">
+          :key="i"
+          class="celda hora"
+          :style="{ gridRow: (i+2) }">
         <div class="hora-contenido">
           {{ hora }}
         </div>
@@ -21,24 +21,26 @@
 
       <!-- Celdas vacías del calendario -->
       <div v-for="celda in celdasVacias" 
-           :key="`empty-${celda.fila}-${celda.columna}`"
-           class="celda celda-vacia"
-           :style="{
-             gridColumn: celda.columna,
-             gridRow: celda.fila
-           }">
+          :key="`empty-${celda.fila}-${celda.columna}`"
+          class="celda celda-vacia"
+          :style="{
+            gridColumn: celda.columna,
+            gridRow: celda.fila
+          }">
         <div class="celda-placeholder"></div>
       </div>
 
       <!-- Materias -->
       <ComMateria v-for="(materia, i) in materias"
-           :key="i"
-           :materia="materia"
-           class="celda-materia"
-           :style="{
-             gridColumn: getDiaColumna(materia.DIA),
-             gridRow: calcularDuracion(materia.HORAINICIO, materia.HORAFINAL)
-           }"
+          :key="materia.ID_HORARIO"
+          :materia="materia"
+          class="celda-materia"
+          @horarioModificado="OHorarioModificado"
+          @horarioEliminado="eliminarHorario"
+          :style="{
+            gridColumn: getDiaColumna(materia.DIA),
+            gridRow: calcularDuracion(materia.HORAINICIO, materia.HORAFINAL)
+          }"
       />
     </div>
   </div>
@@ -56,6 +58,8 @@ export default {
       default: () => []
     }
   },
+
+
   data(){
     return {
       cabeceras: ["Hora/Día","Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"],
@@ -91,8 +95,14 @@ export default {
       const start = hIni - offset + 2 // +2 porque fila 1 son cabeceras, fila 2 = 6am
       const end = hFin - offset + 2
       return `${start} / span ${end - start}`
-    }
+    },
+    async OHorarioModificado() {
+    this.$emit("recargarHorarios"); 
+  },
+    async eliminarHorario() {
+    this.$emit("recargarHorarios");
   }
+}
 }
 </script>
 

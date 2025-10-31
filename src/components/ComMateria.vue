@@ -25,6 +25,7 @@
         @closeDialog="showDialogEdit = false">
         <ComFormHorario
           :id_Horario="materia.ID_HORARIO"
+          @horarioModificado="OHorarioModificado"
         />
       </ComDialog>
     </ComDialog>
@@ -85,16 +86,28 @@ export default {
     },
     eliminarHorario() {
       // Lógica para eliminar el horario
-      window.electronAPI.invoke("deleteHorario", this.materia.ID_HORARIO)
+      if (confirm("¿Estás seguro de que deseas eliminar este horario?")) {
+        window.electronAPI.invoke("deleteHorario", this.materia.ID_HORARIO)
         .then(() => {
           this.$emit('horarioEliminado', this.materia.ID_HORARIO);
           this.showDialog = false;
+          alert("✅ Horario eliminado con éxito");
         })
         .catch(err => {
           console.error("Error eliminando horario:", err);
+          alert("❌ Ocurrió un error al eliminar el horario");
         });
-    }
-   }
+    } else {
+        alert("❎ Eliminación cancelada");
+      }
+    },
+      OHorarioModificado() {
+        this.$emit("horarioModificado", this.materia.ID_HORARIO);
+        this.showDialogEdit = false;
+        this.showDialog = false;
+        alert("✏️ Horario modificado con éxito"); 
+    } 
+  }
 }
 </script>
 

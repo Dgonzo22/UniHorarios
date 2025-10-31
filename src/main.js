@@ -7,7 +7,6 @@ import { createEvents } from "./conectBD/Events/ValidarConflictos.js";
 
 
 app.whenReady().then(() => {
-  createWindow();
   createEvents(); // <-- registra todos los handlers
 });
 

@@ -181,10 +181,10 @@ export default {
         );
 
         for (const dia of this.diasSeleccionados) {
-          await window.electronAPI.invoke("insertDia", horarioGuardado.id, dia);
+          await window.electronAPI.invoke("insertDia", horarioGuardado.id_Horario, dia);
         }
 
-        alert("Horario guardado 💾");
+        this.$emit("horarioModificado");
       } catch (err) {
         console.error(err);
         alert("Error guardando horario ❌");
