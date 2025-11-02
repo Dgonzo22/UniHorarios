@@ -2,9 +2,8 @@
   <div>
     <!-- Tarjeta clickeable -->
     <div class="materia-card" @click="showDialog = true">
-      <div class="nombre">{{ materia.infMateria?.NOMBRE || '' }}</div>
+      <div class="nombre">{{ infMateria?.NOMBRE || '' }} - {{ infMateria?.NRC  || ''}}</div>
       <div class="detalles">{{ formateoA12(materia.HORAINICIO) }} - {{ formateoA12(materia.HORAFINAL) }}</div>
-      <div class="detalles text-xs">Grupo: {{ materia.GRUPO }}</div>
       <div class="detalles text-xs">Docente: {{ infoDocente?.NOMBRE || ""}}</div>
     </div>
 
@@ -16,7 +15,6 @@
         <div><strong>Semestre:</strong></div><div> Semestre {{ materia.SEMESTRE }}</div>
         <div><strong>Docente:</strong></div><div>{{ infoDocente?.NOMBRE }}</div>
         <div><strong>Correo:</strong></div><div>{{ infoDocente?.CORREO }}</div>
-        <div><strong>Perfil:</strong></div><div>{{ infoDocente?.PERFIL }}</div>
         <div><button class="btn" @click="showDialogEdit = true">Editar</button></div>
         <div><button class="btn red" @click="eliminarHorario">Eliminar</button></div>
       </div>
@@ -126,8 +124,9 @@ export default {
   text-align: left;
   cursor: pointer;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.2);
   margin-bottom: 8px;
+
 }
 
 .materia-card:hover {

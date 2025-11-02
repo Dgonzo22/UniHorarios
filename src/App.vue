@@ -163,7 +163,7 @@ export default {
   top: 0; left: 0; width: 100%; height: 100%;
   background: url('/src/views/img/backgroundUNI.jpg') no-repeat center center;
   background-size: cover;
-  opacity: 0.32;
+  opacity: 0.7;
   z-index: 0;
 }
 

@@ -1,60 +1,33 @@
 * ANTES DE COMENZAR A PROGRAMAR HACER GIT PULL
 
-1) Santiago
-pendiente
-- el input de editar y actualizar horario se ve mal
-        src\components\ComFormHorario.vue
-        src\components\ComMateria.vue
-- mejora diseño
-
-
-
-
-
-
-
-5) ERICK
-- alerta elimnar Horario
-- cuando elimine recarga horario
-- cuando elimine cerrar dialogos
-- alerta modificacion  Horario
-- cuando edite recargar hoario
-- cuando edite cerrar dialogos
-
-src\components\ComMateria.vue
-src\components\ComFormHorario.vue
-
-* ANTES DE COMENZAR A PROGRAMAR HACER GIT PULL
-
-6) Gonzalo
-- agregar TC MT (agregar a la base)
+1) Gonzalo
+- agregar TC MT (agregar a la base)- Colocar a Docente , Medio tiempo, Tiempo completo.
 - color por materias llamadas diferentes
         src\conectBD\conectBD.js
         src\conectBD\Events\EventsDocentes.js
         src\views\Docentes.vue
+- manual de instalacion
+- Conflictos con tarjetas
+- Validacion de ingreso de horario limite de 3 horas, 
+- validacion horario solo puede iniciar de 7am a 10pm
+- Validar que la horas de inicio no sea mayor  que la hora final.
+- la resta entre la hora final e inicio no sea menor a 45 minutos
 
-* ANTES DE COMENZAR A PROGRAMAR HACER GIT PULL
-
-7) Erick
-- fondo mas visible en el login
-        src\App.vue
-
-* ANTES DE COMENZAR A PROGRAMAR HACER GIT PULL
-
-8) Juan Camilo
-- cargar de datos al sistema
-- Acta de entrega
-
-* ANTES DE COMENZAR A PROGRAMAR HACER GIT PULL
-
-
-9) Gonzalo
+2) Juan Camilo
+- cargar Horarios
 - manual de instalacion
 
+
 * ANTES DE COMENZAR A PROGRAMAR HACER GIT PULL
 
-
-10) Erick y Santiago
+3) Erick y Santiago
 - Manual de usuario 
 
-* ANTES DE COMENZAR A PROGRAMAR HACER GIT PULL
+4) Santiago 
+- conflictos en EditarHorarios
+
+
+
+
+
+
