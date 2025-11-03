@@ -1,16 +1,17 @@
 <template>
-  <div v-if="visible" class="overlay">
-    <div class="dialog">
-      <header class="dialog-header">
-        <h3>{{ title }}</h3>
-        <button class="close-btn" @click="closeDialog">✖</button>
-      </header>
-      <section class="dialog-body">
-        <slot>
-        </slot>
-      </section>
+  <teleport to="body">
+    <div v-if="visible" class="overlay">
+      <div class="dialog">
+        <header class="dialog-header">
+          <h3>{{ title }}</h3>
+          <button class="close-btn" @click="closeDialog">✖</button>
+        </header>
+        <section class="dialog-body">
+          <slot></slot>
+        </section>
+      </div>
     </div>
-  </div>
+  </teleport>
 </template>
 
 <script>
@@ -41,6 +42,7 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
+  z-index: 999999 !important; 
   background: rgba(0, 0, 0, 0.6);
   display: flex;
   justify-content: center;
@@ -50,7 +52,8 @@ export default {
 .dialog {
   background: white;
   border-radius: 10px;
-  width: auto;
+  width: auto;   
+  z-index: 1000000 !important;
   max-width: 90%;
   box-shadow: 0 4px 10px rgba(0,0,0,0.3);
   animation: fadeIn 0.3s ease;
