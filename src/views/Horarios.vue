@@ -148,6 +148,17 @@ export default {
     },
 
     async validarHorario() {
+      // la hora de inicio no debe ser menor a 7:00 am ni mayor a 10:00 pm
+      if (this.horaInicio < "07:00" || this.horaInicio > "22:00") {
+        alert("⚠️ La hora de inicio debe estar entre 7:00 am y 10:00 pm.");
+        return;
+      }
+      // la hora de fin no debe ser menor a 7:45 am ni mayor a 10:00 pm
+      if (this.horaFin < "07:45" || this.horaFin > "22:00") {
+        alert("⚠️ La hora de fin debe estar entre 7:45 am y 10:00 pm.");
+        return;
+      }
+
       if (
         !this.materiaSeleccionada ||
         !this.docenteSeleccionado ||
@@ -183,6 +194,18 @@ export default {
 
     async guardarHorario() {
       try {
+        // la hora de inicio no debe ser menor a 7:00 am ni mayor a 10:00 pm
+        if (this.horaInicio < "07:00" || this.horaInicio > "22:00") {
+          alert("⚠️ La hora de inicio debe estar entre 7:00 am y 10:00 pm.");
+          return;
+        }
+        // la hora de fin no debe ser menor a 7:45 am ni mayor a 10:00 pm
+        if (this.horaFin < "07:45" || this.horaFin > "22:00") {
+          alert("⚠️ La hora de fin debe estar entre 7:45 am y 10:00 pm.");
+          return;
+        }
+
+
         if (
           !this.materiaSeleccionada ||
           !this.docenteSeleccionado ||

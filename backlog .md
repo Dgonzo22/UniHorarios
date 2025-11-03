@@ -9,7 +9,7 @@
 - manual de instalacion
 - Conflictos con tarjetas
 - Validacion de ingreso de horario limite de 3 horas, 
-- validacion horario solo puede iniciar de 7am a 10pm
+- validacion horario solo puede iniciar de 7am a 10pm  | listo
 - Validar que la horas de inicio no sea mayor  que la hora final.
 - la resta entre la hora final e inicio no sea menor a 45 minutos
 
