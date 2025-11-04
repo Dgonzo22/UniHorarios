@@ -1,7 +1,7 @@
 * ANTES DE COMENZAR A PROGRAMAR HACER GIT PULL
 
 1) Gonzalo
-- agregar TC MT (agregar a la base)- Colocar a Docente , Medio tiempo, Tiempo completo.
+- agregar TC MT (agregar a la base)- Colocar a Docente , Medio tiempo, Tiempo completo.  || listo
 - color por materias llamadas diferentes
         src\conectBD\conectBD.js
         src\conectBD\Events\EventsDocentes.js

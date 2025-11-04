@@ -85,6 +85,24 @@
         </tbody>
       </table>
     </div>
+    <!-- Alerta de mensajes-->
+    <ComDialog
+      title=""
+      class="modal"
+      :visible="openAlertaMensaje"
+      @closeDialog="openAlertaMensaje = false"
+    >
+      <template v-if="tipoAlerta=='error'">
+        <div class="error">
+          {{ mensajeAlerta  }}
+        </div>
+      </template>
+      <template v-else-if="tipoAlerta == 'exito'"> 
+        <div class="exito">
+          {{ mensajeAlerta }}
+        </div>
+      </template>
+    </ComDialog>
   </div>
 </template>
 
@@ -99,13 +117,22 @@ export default {
       materias: [],
       nuevaMateria: { nombre: "", nrc: "", creditos: "" },
       openNewMateria: false,
-      editandoIndex: null
+      editandoIndex: null,
+      //alerta mensaje
+      openAlertaMensaje: false,
+      mensajeAlerta: "",
+      tipoAlerta: "",
     };
   },
   async created() {
     this.cargarMaterias();
   },
   methods: {
+    mostrarAlerta (tipo, mensaje) {
+      this.tipoAlerta = tipo;
+      this.mensajeAlerta = mensaje;
+      this.openAlertaMensaje = true;
+    },
     async cargarMaterias() {
       const result = await window.electronAPI.invoke("getMaterias");
       this.materias = result || [];
@@ -121,6 +148,23 @@ export default {
 
     async guardarMateria() {
       if (this.editandoIndex === null) {
+        //validacion antes de editar
+        if (
+          !this.nuevaMateria.nombre ||
+          !this.nuevaMateria.nrc ||
+          !this.nuevaMateria.creditos
+        ) {
+          this.mostrarAlerta("error","⚠️ Por favor, completa todos los campos antes de guardar.");
+          return;
+        }
+
+        //validacion de creditos
+        const creditos = parseInt(this.nuevaMateria.creditos);
+        if (isNaN(creditos) || creditos < 1 || creditos > 3) {
+          this.mostrarAlerta("error","⚠️ El número de créditos debe ser un valor entre 1 y 3.");
+          return;
+        }
+
         // Insertar
         await window.electronAPI.invoke(
           "insertMateria",
@@ -129,7 +173,23 @@ export default {
           this.nuevaMateria.creditos
         );
       } else {
-        // Actualizar
+        //validacion antes de editar
+        if (
+          !this.nuevaMateria.nombre ||
+          !this.nuevaMateria.nrc ||
+          !this.nuevaMateria.creditos
+        ) {
+          this.mostrarAlerta("error","⚠️ Por favor, completa todos los campos antes de guardar.");
+          return;
+        }
+        //validacion de creditos
+        const creditos = parseInt(this.nuevaMateria.creditos);
+        if (isNaN(creditos) || creditos < 1 || creditos > 3) {
+          this.mostrarAlerta("error","⚠️ El número de créditos debe ser un valor entre 1 y 3.");
+          return;
+        }
+
+        // Actualizar        
         const materia = this.materias[this.editandoIndex];
         await window.electronAPI.invoke(
           "updateMateria",
@@ -298,4 +358,26 @@ th, td {
 .btn.editar:hover { background: #2c9faf; }
 .btn.eliminar { background: #e74a3b; }
 .btn.eliminar:hover { background: #d52a1a; }
+
+.exito, .error {
+  padding: 15px;
+  margin: 10px 0;
+  border-radius: 8px;
+  font-weight: bold;
+  text-align: center;
+  font-size: 1.1em;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  min-width: 400px;
+}
+.exito {
+  background-color: #d4edda; /* Verde claro */
+  color: #155724; /* Verde oscuro */
+  border: 1px solid #c3e6cb;
+}
+
+.error {
+  background-color: #f8d7da; /* Rojo claro/Rosado */
+  color: #721c24; /* Rojo oscuro */
+  border: 1px solid #f5c6cb;
+}
 </style>

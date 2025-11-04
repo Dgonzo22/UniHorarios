@@ -80,6 +80,24 @@
     :materias="listaMaterias"
     @recargarHorarios="cargarHorarios"
     />
+    <!-- Alerta de mensajes-->
+    <ComDialog
+      title=""
+      class="modal"
+      :visible="openAlertaMensaje"
+      @closeDialog="openAlertaMensaje = false"
+    >
+      <template v-if="tipoAlerta=='error'">
+        <div class="error">
+          {{ mensajeAlerta  }}
+        </div>
+      </template>
+      <template v-else-if="tipoAlerta == 'exito'"> 
+        <div class="exito">
+          {{ mensajeAlerta }}
+        </div>
+      </template>
+    </ComDialog>
   </div>
 </template>
 
@@ -101,7 +119,11 @@ export default {
       checkmateria: false,
       id_materia: null,
       listaDocentes: [],
-      listaMateriasDB: []
+      listaMateriasDB: [],
+      //alerta mensaje
+      openAlertaMensaje: false,
+      mensajeAlerta: "",
+      tipoAlerta: "",
     }
   },
   async created() {
@@ -115,6 +137,11 @@ export default {
     this.listaMateriasDB = await window.electronAPI.invoke("getMaterias");
   },
   methods: {
+    mostrarAlerta (tipo, mensaje) {
+      this.tipoAlerta = tipo;
+      this.mensajeAlerta = mensaje;
+      this.openAlertaMensaje = true;
+    },
     async filtrar() {
       this.listaMaterias = await window.electronAPI.invoke(
         "getHorarioFilter",

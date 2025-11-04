@@ -52,7 +52,6 @@ export default {
 .dialog {
   background: white;
   font-family: Arial, sans-serif;
-
   border-radius: 10px;
   width: auto;   
   max-width: 90%;

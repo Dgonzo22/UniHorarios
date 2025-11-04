@@ -157,6 +157,24 @@
         </button>
       </div>
     </ComDialog>
+    <!-- Alerta de mensajes-->
+    <ComDialog
+      title=""
+      class="modal"
+      :visible="openAlertaMensaje"
+      @closeDialog="openAlertaMensaje = false"
+    >
+      <template v-if="tipoAlerta=='error'">
+        <div class="error">
+          {{ mensajeAlerta  }}
+        </div>
+      </template>
+      <template v-else-if="tipoAlerta == 'exito'"> 
+        <div class="exito">
+          {{ mensajeAlerta }}
+        </div>
+      </template>
+    </ComDialog>
   </div>
 </template>
 
@@ -186,13 +204,22 @@ export default {
       },
       openEditDocente: false,
       openAddDocente: false,
+      openAlertaMensaje: false,
+      mensajeAlerta: "",
+      tipoAlerta: "",
     };
   },
 
   created() {
     this.cargarDocentes();
   },
+  
   methods: {
+    mostrarAlerta (tipo, mensaje) {
+      this.tipoAlerta = tipo;
+      this.mensajeAlerta = mensaje;
+      this.openAlertaMensaje = true;
+    },
     async agregarDocente() {
       // Validar que todos los campos estén llenos
       if (
@@ -202,9 +229,7 @@ export default {
         !this.nuevoDocente.TIPO_CONTRATO ||
         !this.nuevoDocente.PERFIL
       ) {
-        alert(
-          "Por favor, completa todos los campos antes de registrar el docente."
-        );
+        this.mostrarAlerta("error", "⚠️ Por favor, completa todos los campos.");
         return;
       }
 
@@ -235,9 +260,6 @@ export default {
       this.docenteEdit = { ...docente };
     },
     async actualizarDocente() {
-      if (!confirm("¿Seguro que quieres guardar los cambios en este docente?"))
-        return;
-
       await window.electronAPI.invoke(
         "updateDocente",
         this.docenteEdit.ID_DOCENTE,
@@ -248,17 +270,16 @@ export default {
         this.docenteEdit.PERFIL
       );
       this.cargarDocentes();
-      console.log(this.docentes);
       this.openEditDocente = false;
 
-      alert("✅ Docente actualizado correctamente.");
+      this.mostrarAlerta("exito","✅ Docente actualizado correctamente.");
     },
     async eliminarDocente(idDocente) {
       if (!confirm("⚠️ ¿Estás seguro de eliminar este docente?")) return;
 
       await window.electronAPI.invoke("deleteDocente", idDocente);
       this.cargarDocentes();
-      alert("🗑️ Docente eliminado con éxito.");
+      this.mostrarAlerta("exito", "🗑️ Docente eliminado con éxito.");
     },
   },
 };
@@ -432,6 +453,27 @@ textarea:focus {
 .modal-content {
   min-width: 500px;
   font-family: Arial, sans-serif;
+}
 
+.exito, .error {
+  padding: 15px;
+  margin: 10px 0;
+  border-radius: 8px;
+  font-weight: bold;
+  text-align: center;
+  font-size: 1.1em;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  min-width: 400px;
+}
+.exito {
+  background-color: #d4edda; /* Verde claro */
+  color: #155724; /* Verde oscuro */
+  border: 1px solid #c3e6cb;
+}
+
+.error {
+  background-color: #f8d7da; /* Rojo claro/Rosado */
+  color: #721c24; /* Rojo oscuro */
+  border: 1px solid #f5c6cb;
 }
 </style>

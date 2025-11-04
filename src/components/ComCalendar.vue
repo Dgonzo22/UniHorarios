@@ -2,73 +2,124 @@
   <div class="calendario-wrapper">
     <div class="calendario-container">
       <!-- Cabeceras -->
-      <div v-for="(cabeza, i) in cabeceras"
-          :key="i"
-          class="celda cabecera"
-          :class="{ 'cabecera-hora': i === 0, 'cabecera-dia': i > 0 }">
+      <div
+        v-for="(cabeza, i) in cabeceras"
+        :key="i"
+        class="celda cabecera"
+        :class="{ 'cabecera-hora': i === 0, 'cabecera-dia': i > 0 }"
+      >
         {{ cabeza }}
       </div>
 
       <!-- Horas en la primera columna -->
-      <div v-for="(hora, i) in horas"
-          :key="i"
-          class="celda hora"
-          :style="{ gridRow: (i+2) }">
+      <div
+        v-for="(hora, i) in horas"
+        :key="i"
+        class="celda hora"
+        :style="{ gridRow: i + 2 }"
+      >
         <div class="hora-contenido">
           {{ hora }}
         </div>
       </div>
 
       <!-- Celdas vacías del calendario -->
-      <div v-for="celda in celdasVacias" 
-          :key="`empty-${celda.fila}-${celda.columna}`"
-          class="celda celda-vacia"
-          :style="{
-            gridColumn: celda.columna,
-            gridRow: celda.fila
-          }">
+      <div
+        v-for="celda in celdasVacias"
+        :key="`empty-${celda.fila}-${celda.columna}`"
+        class="celda celda-vacia"
+        :style="{
+          gridColumn: celda.columna,
+          gridRow: celda.fila,
+        }"
+      >
         <div class="celda-placeholder"></div>
       </div>
 
       <!-- Materias -->
-      <ComMateria v-for="(materia, i) in materias"
-          :key="materia.ID_HORARIO"
-          :materia="materia"
-          class="celda-materia"
-          @horarioModificado="OHorarioModificado"
-          @horarioEliminado="eliminarHorario"
-          :style="{
-            gridColumn: getDiaColumna(materia.DIA),
-            gridRow: calcularDuracion(materia.HORAINICIO, materia.HORAFINAL)
-          }"
+      <ComMateria
+        v-for="(materia, i) in materias"
+        :key="materia.ID_HORARIO"
+        :materia="materia"
+        class="celda-materia"
+        @horarioModificado="OHorarioModificado"
+        @horarioEliminado="eliminarHorario"
+        :style="{
+          gridColumn: getDiaColumna(materia.DIA),
+          gridRow: calcularDuracion(materia.HORAINICIO, materia.HORAFINAL),
+        }"
       />
     </div>
+    <!-- Alerta de mensajes-->
+    <ComDialog
+      title=""
+      class="modal"
+      :visible="openAlertaMensaje"
+      @closeDialog="openAlertaMensaje = false"
+    >
+      <template v-if="tipoAlerta == 'error'">
+        <div class="error">
+          {{ mensajeAlerta }}
+        </div>
+      </template>
+      <template v-else-if="tipoAlerta == 'exito'">
+        <div class="exito">
+          {{ mensajeAlerta }}
+        </div>
+      </template>
+    </ComDialog>
   </div>
 </template>
 
 <script>
-import ComMateria from './ComMateria.vue'
+import ComMateria from "./ComMateria.vue";
+import ComDialog from "./ComDialog.vue";
 
 export default {
-  components: { ComMateria },
-  name: 'ComCalendar',
+  components: { ComMateria, ComDialog },
+  name: "ComCalendar",
   props: {
     materias: {
       type: Array,
-      default: () => []
-    }
+      default: () => [],
+    },
   },
 
-
-  data(){
+  data() {
     return {
-      cabeceras: ["Hora/Día","Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"],
+      cabeceras: [
+        "Hora/Día",
+        "Lunes",
+        "Martes",
+        "Miércoles",
+        "Jueves",
+        "Viernes",
+        "Sábado",
+        "Domingo",
+      ],
       horas: [
-        "6:00 am","7:00 am","8:00 am","9:00 am","10:00 am","11:00 am",
-        "12:00 pm","1:00 pm","2:00 pm","3:00 pm","4:00 pm","5:00 pm",
-        "6:00 pm","7:00 pm","8:00 pm","9:00 pm"
-      ]
-    }
+        "6:00 am",
+        "7:00 am",
+        "8:00 am",
+        "9:00 am",
+        "10:00 am",
+        "11:00 am",
+        "12:00 pm",
+        "1:00 pm",
+        "2:00 pm",
+        "3:00 pm",
+        "4:00 pm",
+        "5:00 pm",
+        "6:00 pm",
+        "7:00 pm",
+        "8:00 pm",
+        "9:00 pm",
+      ],
+      //alerta mensaje
+      openAlertaMensaje: false,
+      mensajeAlerta: "",
+      tipoAlerta: "",
+    };
   },
   computed: {
     celdasVacias() {
@@ -81,29 +132,29 @@ export default {
         }
       }
       return celdas;
-    }
+    },
   },
-  methods:{
-    getDiaColumna(dia){
+  methods: {
+    getDiaColumna(dia) {
       const index = this.cabeceras.indexOf(dia);
       return index !== -1 ? index + 1 : 2; // Default a Lunes si no encuentra
     },
-    calcularDuracion(horaInicio, horaFinal){
-      const hIni = parseInt(horaInicio.split(':')[0])
-      const hFin = parseInt(horaFinal.split(':')[0])
-      const offset = 6 // porque empezamos a las 6am
-      const start = hIni - offset + 2 // +2 porque fila 1 son cabeceras, fila 2 = 6am
-      const end = hFin - offset + 2
-      return `${start} / span ${end - start}`
+    calcularDuracion(horaInicio, horaFinal) {
+      const hIni = parseInt(horaInicio.split(":")[0]);
+      const hFin = parseInt(horaFinal.split(":")[0]);
+      const offset = 6; // porque empezamos a las 6am
+      const start = hIni - offset + 2; // +2 porque fila 1 son cabeceras, fila 2 = 6am
+      const end = hFin - offset + 2;
+      return `${start} / span ${end - start}`;
     },
     async OHorarioModificado() {
-    this.$emit("recargarHorarios"); 
-  },
+      this.$emit("recargarHorarios");
+    },
     async eliminarHorario() {
-    this.$emit("recargarHorarios");
-  }
-}
-}
+      this.$emit("recargarHorarios");
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -111,7 +162,7 @@ export default {
   background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
   border-radius: 24px;
   padding: 4px;
-  box-shadow: 
+  box-shadow:
     0 8px 32px rgba(15, 23, 42, 0.1),
     inset 0 1px 0 rgba(255, 255, 255, 0.8);
 }
@@ -122,11 +173,15 @@ export default {
   grid-auto-rows: 60px;
   background: rgba(255, 255, 255, 0.95);
   border-radius: 20px;
-  box-shadow: 
+  box-shadow:
     0 4px 20px rgba(15, 23, 42, 0.08),
     inset 0 1px 0 rgba(255, 255, 255, 0.9);
   overflow: hidden;
-  font-family: "Inter", "SF Pro Display", -apple-system, sans-serif;
+  font-family:
+    "Inter",
+    "SF Pro Display",
+    -apple-system,
+    sans-serif;
   color: #1e293b;
   position: relative;
   backdrop-filter: blur(10px);
@@ -145,11 +200,11 @@ export default {
 }
 
 /* Eliminar bordes extremos */
-.calendario-container .celda:nth-child(8n+1) {
+.calendario-container .celda:nth-child(8n + 1) {
   border-right: 1px solid rgba(226, 232, 240, 0.8);
 }
 
-.calendario-container .celda:nth-child(n+1):nth-child(-n+8) {
+.calendario-container .celda:nth-child(n + 1):nth-child(-n + 8) {
   border-bottom: 1px solid rgba(226, 232, 240, 0.8);
 }
 
@@ -166,13 +221,17 @@ export default {
 }
 
 .cabecera-hora::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: 0;
   right: 0;
   width: 1px;
   height: 100%;
-  background: linear-gradient(transparent, rgba(59, 130, 246, 0.4), transparent);
+  background: linear-gradient(
+    transparent,
+    rgba(59, 130, 246, 0.4),
+    transparent
+  );
 }
 
 /* Cabeceras de días */
@@ -194,15 +253,16 @@ export default {
 }
 
 .cabecera-dia::before {
-  content: '';
+  content: "";
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
   height: 2px;
-  background: linear-gradient(90deg, 
-    rgba(59, 130, 246, 0.6), 
-    rgba(139, 92, 246, 0.6), 
+  background: linear-gradient(
+    90deg,
+    rgba(59, 130, 246, 0.6),
+    rgba(139, 92, 246, 0.6),
     rgba(236, 72, 153, 0.6)
   );
   opacity: 0.7;
@@ -229,22 +289,31 @@ export default {
 
 /* Celdas vacías del calendario */
 .celda-vacia {
-  background: 
-    linear-gradient(180deg, rgba(248, 250, 252, 0.6) 0%, rgba(255, 255, 255, 0.8) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(248, 250, 252, 0.6) 0%,
+    rgba(255, 255, 255, 0.8) 100%
+  );
   position: relative;
 }
 
 .celda-vacia:hover {
-  background: 
-    linear-gradient(180deg, rgba(239, 246, 255, 0.7) 0%, rgba(255, 255, 255, 0.9) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(239, 246, 255, 0.7) 0%,
+    rgba(255, 255, 255, 0.9) 100%
+  );
 }
 
 .celda-placeholder {
   width: 100%;
   height: 100%;
   opacity: 0.3;
-  background: 
-    radial-gradient(circle at center, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
+  background: radial-gradient(
+    circle at center,
+    rgba(59, 130, 246, 0.1) 0%,
+    transparent 70%
+  );
 }
 
 /* Materias container */
@@ -256,8 +325,11 @@ export default {
 
 /* Efectos de hover en filas y columnas */
 .calendario-container:hover .celda-vacia {
-  background: 
-    linear-gradient(180deg, rgba(248, 250, 252, 0.8) 0%, rgba(255, 255, 255, 0.9) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(248, 250, 252, 0.8) 0%,
+    rgba(255, 255, 255, 0.9) 100%
+  );
 }
 
 /* Scrollbar personalizada */
@@ -274,25 +346,26 @@ export default {
 }
 
 .calendario-wrapper::-webkit-scrollbar-track {
-  background: 
-    linear-gradient(180deg, rgba(241, 245, 249, 0.9) 0%, rgba(226, 232, 240, 0.8) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(241, 245, 249, 0.9) 0%,
+    rgba(226, 232, 240, 0.8) 100%
+  );
   border-radius: 10px;
   border: 2px solid rgba(255, 255, 255, 0.8);
 }
 
 .calendario-wrapper::-webkit-scrollbar-thumb {
-  background: 
-    linear-gradient(180deg, #cbd5e1 0%, #94a3b8 50%, #64748b 100%);
+  background: linear-gradient(180deg, #cbd5e1 0%, #94a3b8 50%, #64748b 100%);
   border-radius: 10px;
   border: 2px solid rgba(255, 255, 255, 0.8);
-  box-shadow: 
+  box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.4),
     inset 0 -1px 0 rgba(0, 0, 0, 0.1);
 }
 
 .calendario-wrapper::-webkit-scrollbar-thumb:hover {
-  background: 
-    linear-gradient(180deg, #94a3b8 0%, #64748b 50%, #475569 100%);
+  background: linear-gradient(180deg, #94a3b8 0%, #64748b 50%, #475569 100%);
 }
 
 /* Responsive */
@@ -301,11 +374,11 @@ export default {
     grid-template-columns: 100px repeat(7, 1fr);
     grid-auto-rows: 55px;
   }
-  
+
   .cabecera-dia {
     font-size: 0.85rem;
   }
-  
+
   .hora {
     font-size: 0.8rem;
   }
@@ -316,22 +389,22 @@ export default {
     border-radius: 16px;
     margin: 8px;
   }
-  
+
   .calendario-container {
     grid-template-columns: 80px repeat(7, 1fr);
     grid-auto-rows: 50px;
     border-radius: 14px;
   }
-  
+
   .cabecera-dia {
     font-size: 0.75rem;
     padding: 4px;
   }
-  
+
   .hora {
     font-size: 0.75rem;
   }
-  
+
   .cabecera-hora {
     font-size: 0.8rem;
   }
@@ -342,13 +415,13 @@ export default {
     grid-template-columns: 60px repeat(7, 1fr);
     grid-auto-rows: 45px;
   }
-  
+
   .cabecera-dia {
     font-size: 0.7rem;
     writing-mode: vertical-rl;
     text-orientation: mixed;
   }
-  
+
   .hora {
     font-size: 0.7rem;
   }

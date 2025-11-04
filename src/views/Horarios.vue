@@ -107,11 +107,32 @@
         </div>
       </section>
     </div>
+    <!-- Alerta de mensajes-->
+    <ComDialog
+      title=""
+      class="modal"
+      :visible="openAlertaMensaje"
+      @closeDialog="openAlertaMensaje = false"
+    >
+      <template v-if="tipoAlerta=='error'">
+        <div class="error">
+          {{ mensajeAlerta  }}
+        </div>
+      </template>
+      <template v-else-if="tipoAlerta == 'exito'"> 
+        <div class="exito">
+          {{ mensajeAlerta }}
+        </div>
+      </template>
+    </ComDialog>
   </div>
 </template>
 
 <script>
+import ComDialog from "../components/ComDialog.vue";
+
 export default {
+  components: { ComDialog },
   name: "Horarios",
   data() {
     return {
@@ -126,6 +147,10 @@ export default {
       periodo: "",
       diasSemana: ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"],
       diasSeleccionados: [],
+      //alerta
+      openAlertaMensaje: false,
+      mensajeAlerta: "",
+      tipoAlerta: "",
     };
   },
   async created() {
@@ -139,6 +164,11 @@ export default {
     await this.cargarDocentes();
   },
   methods: {
+    mostrarAlerta (tipo, mensaje) {
+      this.tipoAlerta = tipo;
+      this.mensajeAlerta = mensaje;
+      this.openAlertaMensaje = true;
+    },
     async cargarMaterias() {
       const result = await window.electronAPI.invoke("getMaterias");
       this.materias = result || [];
@@ -172,28 +202,28 @@ export default {
 
       // la resta entre la hora final e inicio no sea menor a 45 minutos
       if (duracionFormateada< "00:45") {
-        alert("⚠️ La diferencia entre la hora de inicio y fin debe ser al menos de 45 minutos.");
+        this.mostrarAlerta("error","⚠️ La diferencia entre la hora de inicio y fin debe ser al menos de 45 minutos.");
         return;
       }
       // la resta entre la hora final e inicio no puede ser superior a 45 minutos * 3 veces 
       if (duracionFormateada > "02:15") {
-        alert("⚠️ La diferencia entre la hora de inicio y fin no puede ser superior a 3 credidos correspondientes a 2:15 horas.");
+        this.mostrarAlerta("error","⚠️ La diferencia entre la hora de inicio y fin no puede ser superior a 3 credidos correspondientes a 2:15 horas.");
         return;
       }
 
       // la hora de inicio no puede ser mayor a la hora final
       if (duracionFormateada < 0) {
-        alert("⚠️ La hora de inicio no puede ser posterior a la hora final.");
+        this.mostrarAlerta("error","⚠️ La hora de inicio no puede ser posterior a la hora final.");
         return;
       }
       // la hora de inicio no debe ser menor a 7:00 am ni mayor a 10:00 pm
       if (this.horaInicio < "07:00" || this.horaInicio > "22:00") {
-        alert("⚠️ La hora de inicio debe estar entre 7:00 am y 10:00 pm.");
+        this.mostrarAlerta("error","⚠️ La hora de inicio debe estar entre 7:00 am y 10:00 pm.");
         return;
       }
       // la hora de fin no debe ser menor a 7:45 am ni mayor a 10:00 pm
       if (this.horaFin < "07:45" || this.horaFin > "22:00") {
-        alert("⚠️ La hora de fin debe estar entre 7:45 am y 10:00 pm.");
+        this.mostrarAlerta("error","⚠️ La hora de fin debe estar entre 7:45 am y 10:00 pm.");
         return;
       }
 
@@ -202,7 +232,7 @@ export default {
         !this.docenteSeleccionado ||
         this.diasSeleccionados.length === 0
       ) {
-        alert("Complete todos los campos antes de validar ⚠️");
+        this.mostrarAlerta("error","⚠️ Complete todos los campos antes de validar.");
         return;
       }
 
@@ -222,12 +252,11 @@ export default {
         );
 
         if (resultado.conflicto) {
-          alert(`⚠️ ${resultado.mensaje}`);
+          this.mostrarAlerta("error",`⚠️ ${resultado.mensaje}`);
           return;
         }
       }
-
-      alert("✅ No se detectaron conflictos.");
+      this.mostrarAlerta("exito","✅ No se detectaron conflictos.");
     },
 
     async guardarHorario() {
@@ -245,28 +274,28 @@ export default {
 
         // la resta entre la hora final e inicio no sea menor a 45 minutos
         if (duracionFormateada< "00:45") {
-          alert("⚠️ La diferencia entre la hora de inicio y fin debe ser al menos de 45 minutos.");
+          this.mostrarAlerta("error","⚠️ La diferencia entre la hora de inicio y fin debe ser al menos de 45 minutos.");
           return;
         }
         // la resta entre la hora final e inicio no puede ser superior a 45 minutos * 3 veces 
         if (duracionFormateada > "02:15") {
-          alert("⚠️ La diferencia entre la hora de inicio y fin no puede ser superior a 3 credidos correspondientes a 2:15 horas.");
+          this.mostrarAlerta("error","⚠️ La diferencia entre la hora de inicio y fin no puede ser superior a 3 credidos correspondientes a 2:15 horas.");
           return;
         }
 
         // la hora de inicio no puede ser mayor a la hora final
         if (duracionFormateada < 0) {
-          alert("⚠️ La hora de inicio no puede ser posterior a la hora final.");
+          this.mostrarAlerta("error","⚠️ La hora de inicio no puede ser posterior a la hora final.");
           return;
         }
         // la hora de inicio no debe ser menor a 7:00 am ni mayor a 10:00 pm
         if (this.horaInicio < "07:00" || this.horaInicio > "22:00") {
-          alert("⚠️ La hora de inicio debe estar entre 7:00 am y 10:00 pm.");
+          this.mostrarAlerta("error","⚠️ La hora de inicio debe estar entre 7:00 am y 10:00 pm.");
           return;
         }
         // la hora de fin no debe ser menor a 7:45 am ni mayor a 10:00 pm
         if (this.horaFin < "07:45" || this.horaFin > "22:00") {
-          alert("⚠️ La hora de fin debe estar entre 7:45 am y 10:00 pm.");
+          this.mostrarAlerta("error","⚠️ La hora de fin debe estar entre 7:45 am y 10:00 pm.");
           return;
         }
 
@@ -276,7 +305,7 @@ export default {
           !this.docenteSeleccionado ||
           this.diasSeleccionados.length === 0
         ) {
-          alert("Complete todos los campos antes de guardar ⚠️");
+          this.mostrarAlerta("error","⚠️ Complete todos los campos antes de guardar.");
           return;
         }
 
@@ -297,7 +326,7 @@ export default {
           );
 
           if (resultado.conflicto) {
-            alert(`⚠️ ${resultado.mensaje}`);
+            this.mostrarAlerta("error",`⚠️ ${resultado.mensaje}`);
             return;
           }
         }
@@ -318,12 +347,11 @@ export default {
         for (const dia of this.diasSeleccionados) {
           await window.electronAPI.invoke("insertDia", horarioGuardado.id, dia);
         }
-
-        alert("💾 Horario guardado correctamente.");
+        this.mostrarAlerta("exito","💾 Horario guardado correctamente.");
         this.resetFormulario();
       } catch (err) {
         console.error(err);
-        alert("❌ Error guardando el horario.");
+        this.mostrarAlerta("error","❌ Error guardando el horario.");
       }
     },
 
@@ -434,5 +462,27 @@ button {
 .guardar {
   background: #34d399;
   color: white;
+}
+
+.exito, .error {
+  padding: 15px;
+  margin: 10px 0;
+  border-radius: 8px;
+  font-weight: bold;
+  text-align: center;
+  font-size: 1.1em;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  min-width: 400px;
+}
+.exito {
+  background-color: #d4edda; /* Verde claro */
+  color: #155724; /* Verde oscuro */
+  border: 1px solid #c3e6cb;
+}
+
+.error {
+  background-color: #f8d7da; /* Rojo claro/Rosado */
+  color: #721c24; /* Rojo oscuro */
+  border: 1px solid #f5c6cb;
 }
 </style>
