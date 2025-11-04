@@ -4,7 +4,9 @@
     <!-- Tabla de docentes -->
     <table class="tabla-docentes">
       <caption>
-        <button @click="openAddDocente = true" class="btn-agregar">➕ Agregar Nuevo Docente</button>
+        <button @click="openAddDocente = true" class="btn-agregar">
+          ➕ Agregar Nuevo Docente
+        </button>
       </caption>
       <thead>
         <tr>
@@ -22,15 +24,22 @@
           <td>{{ docente.CORREO }}</td>
           <td>{{ docente.PERFIL }}</td>
           <td>
-            <button @click="openDialogEdit(docente)" class="btn-editar">✏️ Editar</button>
-            <button @click="eliminarDocente(docente.ID_DOCENTE)" class="btn-eliminar">🗑️ Eliminar</button>
+            <button @click="openDialogEdit(docente)" class="btn-editar">
+              ✏️ Editar
+            </button>
+            <button
+              @click="eliminarDocente(docente.ID_DOCENTE)"
+              class="btn-eliminar"
+            >
+              🗑️ Eliminar
+            </button>
           </td>
         </tr>
       </tbody>
     </table>
 
     <!-- Modal de edición -->
-    <ComDialog 
+    <ComDialog
       :visible="openEditDocente"
       class="modal"
       @closeDialog="openEditDocente = false"
@@ -64,37 +73,50 @@
         </div>
 
         <div class="input-group">
+          <label>Tipo Contrato:</label>
+          <select v-model="docenteEdit.TIPO_CONTRATO">
+            <option value="MT">Medio tiempo (MT)</option>
+            <option value="TC">Tiempo completo (TC)</option>
+          </select>
+        </div>
+
+        <div class="input-group">
           <label>Perfil:</label>
-          <input type="text" v-model="docenteEdit.PERFIL" />
+          <textarea v-model="docenteEdit.PERFIL"></textarea>
         </div>
 
         <div class="modal-actions">
-          <button @click="actualizarDocente" class="btn-guardar">💾 Guardar</button>
-          <button @click="openEditDocente = false" class="btn-cancelar">❌ Cancelar</button>
+          <button @click="actualizarDocente" class="btn-guardar">
+            💾 Guardar
+          </button>
+          <button @click="openEditDocente = false" class="btn-cancelar">
+            ❌ Cancelar
+          </button>
         </div>
       </div>
     </ComDialog>
     <!-- Formulario de nuevo docente -->
-     <ComDialog title="➕ Agregar Nuevo Docente"
+    <ComDialog
+      title="➕ Agregar Nuevo Docente"
+      class="modal"
       :visible="openAddDocente"
       @closeDialog="openAddDocente = false"
-     >
+    >
       <div class="modal-content">
-
         <div class="input-group">
           <label for="idIdentificacion">ID Profesor:</label>
-        <input
-          id="idIdentificacion"
-          type="text"
-          inputmode="numeric"
-          maxlength="6"
-          v-model="nuevoDocente.ID_IDENTIFICACION"
-          required
-          placeholder="Id del profesor (Máx. 6 dígitos)"
-          oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0,6)"
-        />
-      </div>
-  
+          <input
+            id="idIdentificacion"
+            type="text"
+            inputmode="numeric"
+            maxlength="6"
+            v-model="nuevoDocente.ID_IDENTIFICACION"
+            required
+            placeholder="Id del profesor (Máx. 6 dígitos)"
+            oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0,6)"
+          />
+        </div>
+
         <div class="input-group">
           <label for="nombre">Nombre:</label>
           <input
@@ -106,7 +128,7 @@
             placeholder="Máx. 30 caracteres"
           />
         </div>
-  
+
         <div class="input-group">
           <label for="correo">Correo:</label>
           <input
@@ -116,25 +138,27 @@
             placeholder="ejemplo@correo.com"
           />
         </div>
-  
-        <div class="input-group">
-          <label for="perfil">Perfil:</label>
-          <input
-            id="perfil"
-            type="text"
-            v-model="nuevoDocente.PERFIL"
-            placeholder="Perfil del docente"
-          />
-        </div>
-  
-        <button type="submit" class="btn-agregar" @click="agregarDocente">➕ Agregar Docente</button>
-      </div>
 
-     </ComDialog>
+        <div class="input-group">
+          <label>Tipo Contrato:</label>
+          <select v-model="nuevoDocente.TIPO_CONTRATO">
+            <option value="MT">Medio tiempo (MT)</option>
+            <option value="TC">Tiempo completo (TC)</option>
+          </select>
+        </div>
+
+        <div class="input-group">
+          <label>Perfil:</label>
+          <textarea v-model="nuevoDocente.PERFIL"></textarea>
+        </div>
+
+        <button type="submit" class="btn-agregar" @click="agregarDocente">
+          ➕ Agregar Docente
+        </button>
+      </div>
+    </ComDialog>
   </div>
 </template>
-
-
 
 <script>
 import ComDialog from "../components/ComDialog.vue";
@@ -145,10 +169,23 @@ export default {
   data() {
     return {
       docentes: [],
-      nuevoDocente: { ID_IDENTIFICACION: "", NOMBRE: "", CORREO: "", PERFIL: "" },
-      docenteEdit: { ID_DOCENTE: null, ID_IDENTIFICACION: "", NOMBRE: "", CORREO: "", PERFIL: "" },
+      nuevoDocente: {
+        ID_IDENTIFICACION: "",
+        NOMBRE: "",
+        CORREO: "",
+        PERFIL: "",
+        TIPO_CONTRATO: "",
+      },
+      docenteEdit: {
+        ID_DOCENTE: null,
+        ID_IDENTIFICACION: "",
+        NOMBRE: "",
+        CORREO: "",
+        PERFIL: "",
+        TIPO_CONTRATO: "",
+      },
       openEditDocente: false,
-      openAddDocente: false
+      openAddDocente: false,
     };
   },
 
@@ -156,43 +193,50 @@ export default {
     this.cargarDocentes();
   },
   methods: {
-      async agregarDocente() {
+    async agregarDocente() {
       // Validar que todos los campos estén llenos
-      if (!this.nuevoDocente.ID_IDENTIFICACION ||
-          !this.nuevoDocente.NOMBRE ||
-          !this.nuevoDocente.CORREO ||
-          !this.nuevoDocente.PERFIL) {
-        alert('Por favor, completa todos los campos antes de registrar el docente.');
+      if (
+        !this.nuevoDocente.ID_IDENTIFICACION ||
+        !this.nuevoDocente.NOMBRE ||
+        !this.nuevoDocente.CORREO ||
+        !this.nuevoDocente.TIPO_CONTRATO ||
+        !this.nuevoDocente.PERFIL
+      ) {
+        alert(
+          "Por favor, completa todos los campos antes de registrar el docente."
+        );
         return;
       }
-
 
       await window.electronAPI.invoke(
         "insertDocente",
         Number(this.nuevoDocente.ID_IDENTIFICACION),
         this.nuevoDocente.NOMBRE,
         this.nuevoDocente.CORREO,
+        this.nuevoDocente.TIPO_CONTRATO,
         this.nuevoDocente.PERFIL
       );
 
       this.cargarDocentes();
 
-      this.nuevoDocente.ID_IDENTIFICACION = "" 
-      this.nuevoDocente.NOMBRE = ""
-      this.nuevoDocente.CORREO = ""
-      this.nuevoDocente.PERFIL = ""
+      this.nuevoDocente.ID_IDENTIFICACION = "";
+      this.nuevoDocente.NOMBRE = "";
+      this.nuevoDocente.CORREO = "";
+      this.nuevoDocente.TIPO_CONTRATO = "";
+      this.nuevoDocente.PERFIL = "";
 
       this.openAddDocente = false;
     },
     async cargarDocentes() {
-      this.docentes = await window.electronAPI.invoke("getDocentes") || [];
+      this.docentes = (await window.electronAPI.invoke("getDocentes")) || [];
     },
     openDialogEdit(docente) {
       this.openEditDocente = true;
       this.docenteEdit = { ...docente };
     },
     async actualizarDocente() {
-      if (!confirm("¿Seguro que quieres guardar los cambios en este docente?")) return;
+      if (!confirm("¿Seguro que quieres guardar los cambios en este docente?"))
+        return;
 
       await window.electronAPI.invoke(
         "updateDocente",
@@ -200,7 +244,8 @@ export default {
         this.docenteEdit.ID_IDENTIFICACION,
         this.docenteEdit.NOMBRE,
         this.docenteEdit.CORREO,
-        this.docenteEdit.PERFIL,
+        this.docenteEdit.TIPO_CONTRATO,
+        this.docenteEdit.PERFIL
       );
       this.cargarDocentes();
       console.log(this.docentes);
@@ -214,9 +259,8 @@ export default {
       await window.electronAPI.invoke("deleteDocente", idDocente);
       this.cargarDocentes();
       alert("🗑️ Docente eliminado con éxito.");
-    }
-  
-  }
+    },
+  },
 };
 </script>
 
@@ -242,7 +286,7 @@ h2 {
   padding: 20px;
   border-radius: 10px;
   margin-bottom: 25px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .input-group {
@@ -273,7 +317,7 @@ button {
 .btn-agregar {
   grid-column: span 2;
   background: hsl(212, 100%, 17%);
-  color: #ffD200;
+  color: #ffd200;
 }
 
 .btn-agregar:hover {
@@ -293,7 +337,7 @@ button {
 }
 .tabla-docentes th {
   background: hsl(212, 100%, 17%);
-  color: #ffD200;
+  color: #ffd200;
   font-weight: 700;
   padding: 12px;
   text-align: center;
@@ -311,7 +355,8 @@ button {
 .tabla-docentes tr:hover td {
   background: #e3f0ff;
 }
-.tabla-docentes th, .tabla-docentes td {
+.tabla-docentes th,
+.tabla-docentes td {
   border: 1px solid #d1d5db;
 }
 
@@ -333,7 +378,6 @@ button {
   background: #c82333;
 }
 
-
 .btn-guardar {
   background: #007bff;
   color: white;
@@ -350,5 +394,44 @@ button {
 
 .btn-cancelar:hover {
   background: #5a6268;
+}
+
+/* ... (tu CSS existente) ... */
+
+/* Estilos comunes para todos los campos de formulario */
+input[type="text"],
+input[type="number"],
+input[type="email"],
+select,
+textarea {
+  width: 100%; /* Asegura que ocupen todo el ancho del contenedor */
+  padding: 10px; /* Aumenta el padding para un mejor tacto */
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  box-sizing: border-box; /* Incluye padding y border en el ancho/alto */
+  margin-top: 4px; /* Pequeño margen superior */
+  margin-bottom: 8px; /* Pequeño margen inferior */
+  font-size: 16px; /* Tamaño de fuente legible */
+}
+
+/* Estilo específico para el textarea, ya que debe tener más altura */
+textarea {
+  resize: vertical; /* Permite redimensionar verticalmente */
+  min-height: 100px; /* Altura mínima para el área de texto */
+}
+
+/* Estilos de foco para mejorar la usabilidad */
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: #007bff; /* Color de borde al enfocar */
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); /* Sombra suave */
+  outline: none; /* Elimina el contorno predeterminado del navegador */
+}
+
+.modal-content {
+  min-width: 500px;
+  font-family: Arial, sans-serif;
+
 }
 </style>

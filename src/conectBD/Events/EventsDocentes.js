@@ -22,9 +22,9 @@ function createEvents(){
     }
   });
 
-  ipcMain.handle("insertDocente",async(event, ID_IDENTIFICACION, NOMBRE, CORREO, PERFIL)=> {
+  ipcMain.handle("insertDocente",async(event, ID_IDENTIFICACION, NOMBRE, CORREO, TIPO_CONTRATO, PERFIL)=> {
     try {
-      const result = await conectBD.insertDocente(ID_IDENTIFICACION, NOMBRE, CORREO, PERFIL);
+      const result = await conectBD.insertDocente(ID_IDENTIFICACION, NOMBRE, CORREO, TIPO_CONTRATO, PERFIL);
       return result
     }catch(error){
       console.log(error);
@@ -41,9 +41,9 @@ function createEvents(){
     }
   })
   
-  ipcMain.handle("updateDocente", async (event, IDDOCENTE, ID_IDENTIFICACION, NOMBRE, CORREO, PERFIL) => {
+  ipcMain.handle("updateDocente", async (event, IDDOCENTE, ID_IDENTIFICACION, NOMBRE, CORREO, TIPO_CONTRATO, PERFIL) => {
     try {
-      const result = await conectBD.updateDocente(IDDOCENTE, ID_IDENTIFICACION, NOMBRE, CORREO, PERFIL);
+      const result = await conectBD.updateDocente(IDDOCENTE, ID_IDENTIFICACION, NOMBRE, CORREO, TIPO_CONTRATO, PERFIL);
       return result;
     } catch (error) {
       console.log(error);

@@ -51,9 +51,10 @@ export default {
 
 .dialog {
   background: white;
+  font-family: Arial, sans-serif;
+
   border-radius: 10px;
   width: auto;   
-  z-index: 1000000 !important;
   max-width: 90%;
   box-shadow: 0 4px 10px rgba(0,0,0,0.3);
   animation: fadeIn 0.3s ease;
@@ -90,4 +91,6 @@ export default {
   from { opacity: 0; transform: scale(0.9); }
   to { opacity: 1; transform: scale(1); }
 }
+
+
 </style>

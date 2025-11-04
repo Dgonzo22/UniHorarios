@@ -21,7 +21,8 @@ db.run(`
       ID_IDENTIFICACION INTEGER NOT NULL UNIQUE,
       NOMBRE TEXT NOT NULL,
       CORREO TEXT NOT NULL UNIQUE,
-      PERFIL TEXT
+      PERFIL TEXT,
+      TIPO_CONTRATO TEXT NOT NULL DEFAULT 'TC'
   );
 `);
 
@@ -188,25 +189,25 @@ function getDocenteById(idDocente) {
   });
 }
 
-function insertDocente(ID_IDENTIFICACION, NOMBRE, CORREO, PERFIL) {
+function insertDocente(ID_IDENTIFICACION, NOMBRE, CORREO, TIPO_CONTRATO,  PERFIL) {
   return new Promise((resolve, reject) => {
 
-    const query = 'INSERT INTO DOCENTES(ID_IDENTIFICACION, NOMBRE, CORREO, PERFIL) VALUES (?,?,?,?)';
-    db.run(query, [ID_IDENTIFICACION, NOMBRE, CORREO, PERFIL], function (err) {
+    const query = 'INSERT INTO DOCENTES(ID_IDENTIFICACION, NOMBRE, CORREO, TIPO_CONTRATO, PERFIL) VALUES (?,?,?,?,?)';
+    db.run(query, [ID_IDENTIFICACION, NOMBRE, CORREO, TIPO_CONTRATO, PERFIL], function (err) {
       if (err) reject(err);
       else resolve({ id: this.lastID });
     });
   });
 }
 
-function updateDocente(IDDOCENTE, ID_IDENTIFICACION, NOMBRE, CORREO, PERFIL) {
+function updateDocente(IDDOCENTE, ID_IDENTIFICACION, NOMBRE, CORREO, TIPO_CONTRATO, PERFIL) {
   return new Promise((resolve, reject) => {
     const query = `
       UPDATE DOCENTES 
-      SET ID_IDENTIFICACION = ?, NOMBRE = ?, CORREO = ?, PERFIL = ? 
+      SET ID_IDENTIFICACION = ?, NOMBRE = ?, CORREO = ?, TIPO_CONTRATO= ?, PERFIL = ? 
       WHERE ID_DOCENTE = ?
     `;
-    db.run(query, [ID_IDENTIFICACION, NOMBRE, CORREO, PERFIL, IDDOCENTE], function (err) {
+    db.run(query, [ID_IDENTIFICACION, NOMBRE, CORREO, TIPO_CONTRATO, PERFIL, IDDOCENTE], function (err) {
       if (err) reject(err);
       else resolve({ changes: this.changes });
     });
