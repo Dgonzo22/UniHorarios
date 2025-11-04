@@ -134,7 +134,47 @@ export default {
     async cargarDocentes() {
       this.docentes = await window.electronAPI.invoke("getDocentes");
     },
+    horaADate(horaStr) {
+      // Separa el string "HH:MM" en horas y minutos
+      const [horas, minutos] = horaStr.split(':').map(Number);
+      
+      // Crea un nuevo objeto Date con la fecha de hoy
+      const fecha = new Date(); 
+      
+      // Establece la hora y los minutos
+      fecha.setHours(horas, minutos, 0, 0); // (horas, minutos, segundos, milisegundos)
+      
+      return fecha;
+    },
     validarHorario() {
+      // resta entre la hora final e inicio regresando un objeto Date
+      let diferencia =new Date(this.horaADate(this.horaFin) - this.horaADate(this.horaInicio))
+      // 1. Obtener la hora y minutos SIN ajuste de zona horaria (UTC)
+      const horas = diferencia.getUTCHours();
+      const minutos = diferencia.getUTCMinutes();
+
+      // 2. Formatear la duración a HH:MM
+      const duracionFormateada = 
+        String(horas).padStart(2, '0') + ':' + 
+        String(minutos).padStart(2, '0');
+
+      // la resta entre la hora final e inicio no sea menor a 45 minutos
+      if (duracionFormateada< "00:45") {
+        alert("⚠️ La diferencia entre la hora de inicio y fin debe ser al menos de 45 minutos.");
+        return;
+      }
+      // la resta entre la hora final e inicio no puede ser superior a 45 minutos * 3 veces 
+      if (duracionFormateada > "02:15") {
+        alert("⚠️ La diferencia entre la hora de inicio y fin no puede ser superior a 3 credidos correspondientes a 2:15 horas.");
+        return;
+      }
+
+      // la hora de inicio no puede ser mayor a la hora final
+      if (duracionFormateada < 0) {
+        alert("⚠️ La hora de inicio no puede ser posterior a la hora final.");
+        return;
+      }
+
       // la hora de inicio no debe ser menor a 7:00 am ni mayor a 10:00 pm
       if (this.horaInicio < "07:00" || this.horaInicio > "22:00") {
         alert("⚠️ La hora de inicio debe estar entre 7:00 am y 10:00 pm.");
@@ -153,16 +193,54 @@ export default {
     },
     async guardarHorario() {
       try {
-      // la hora de inicio no debe ser menor a 7:00 am ni mayor a 10:00 pm
-      if (this.horaInicio < "07:00" || this.horaInicio > "22:00") {
-        alert("⚠️ La hora de inicio debe estar entre 7:00 am y 10:00 pm.");
-        return;
-      }
-      // la hora de fin no debe ser menor a 7:45 am ni mayor a 10:00 pm
-      if (this.horaFin < "07:45" || this.horaFin > "22:00") {
-        alert("⚠️ La hora de fin debe estar entre 7:45 am y 10:00 pm.");
-        return;
-      }
+        // resta entre la hora final e inicio regresando un objeto Date
+        let diferencia =new Date(this.horaADate(this.horaFin) - this.horaADate(this.horaInicio))
+        // 1. Obtener la hora y minutos SIN ajuste de zona horaria (UTC)
+        const horas = diferencia.getUTCHours();
+        const minutos = diferencia.getUTCMinutes();
+
+        // 2. Formatear la duración a HH:MM
+        const duracionFormateada = 
+          String(horas).padStart(2, '0') + ':' + 
+          String(minutos).padStart(2, '0');
+
+        // la resta entre la hora final e inicio no sea menor a 45 minutos
+        if (duracionFormateada< "00:45") {
+          alert("⚠️ La diferencia entre la hora de inicio y fin debe ser al menos de 45 minutos.");
+          return;
+        }
+        // la resta entre la hora final e inicio no puede ser superior a 45 minutos * 3 veces 
+        if (duracionFormateada > "02:15") {
+          alert("⚠️ La diferencia entre la hora de inicio y fin no puede ser superior a 3 credidos correspondientes a 2:15 horas.");
+          return;
+        }
+
+        // la hora de inicio no puede ser mayor a la hora final
+        if (duracionFormateada < 0) {
+          alert("⚠️ La hora de inicio no puede ser posterior a la hora final.");
+          return;
+        }
+        // la resta entre la hora final e inicio no sea menor a 45 minutos
+        if (this.horaFin - this.horaInicio < "00:45") {
+          alert("⚠️ La diferencia entre la hora de inicio y fin debe ser al menos de 45 minutos.");
+          return;
+        }
+        // la resta entre la hora final e inicio no puede ser superior a 45 minutos * 3 veces 
+        if (this.horaFin - this.horaFin > "02:15") {
+          alert("⚠️ La diferencia entre la hora de inicio y fin no puede ser superior a 3 credidos correspondientes a 2:15 horas.");
+          return;
+        }
+
+        // la hora de inicio no debe ser menor a 7:00 am ni mayor a 10:00 pm
+        if (this.horaInicio < "07:00" || this.horaInicio > "22:00") {
+          alert("⚠️ La hora de inicio debe estar entre 7:00 am y 10:00 pm.");
+          return;
+        }
+        // la hora de fin no debe ser menor a 7:45 am ni mayor a 10:00 pm
+        if (this.horaFin < "07:45" || this.horaFin > "22:00") {
+          alert("⚠️ La hora de fin debe estar entre 7:45 am y 10:00 pm.");
+          return;
+        }
 
         if (!this.materiaSeleccionada || !this.docenteSeleccionado || this.diasSeleccionados.length === 0) {
           alert("Complete todos los campos antes de guardar ⚠️");
