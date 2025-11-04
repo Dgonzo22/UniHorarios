@@ -47,6 +47,7 @@
         :style="{
           gridColumn: getDiaColumna(materia.DIA),
           gridRow: calcularDuracion(materia.HORAINICIO, materia.HORAFINAL),
+          ...getMateriaColor(materia.NOMBRE),
         }"
       />
     </div>
@@ -115,6 +116,19 @@ export default {
         "8:00 pm",
         "9:00 pm",
       ],
+      // Lista de colores para materias
+      coloresMaterias: [
+        { bg: "#38A169", text: "#FFFFFF" }, // Verde esmeralda
+        { bg: "#4299E1", text: "#FFFFFF" }, // Azul vibrante
+        { bg: "#ED8936", text: "#FFFFFF" }, // Naranja fuerte
+        { bg: "#9F7AEA", text: "#FFFFFF" }, // Púrpura suave
+        { bg: "#E53E3E", text: "#FFFFFF" }, // Rojo coral
+        { bg: "#D69E2E", text: "#FFFFFF" }, // Amarillo mostaza
+        { bg: "#4FD1C5", text: "#000000" }, // Turquesa claro
+        { bg: "#F6AD55", text: "#000000" }, // Durazno
+        { bg: "#B794F4", text: "#000000" }, // Lavanda
+        { bg: "#63B3ED", text: "#FFFFFF" }, // Azul cielo
+      ],
       //alerta mensaje
       openAlertaMensaje: false,
       mensajeAlerta: "",
@@ -135,6 +149,26 @@ export default {
     },
   },
   methods: {
+    getMateriaColor(nombreMateria) {
+      if (!nombreMateria) {
+        return { backgroundColor: "#ccc", color: "#333" };
+      }
+      // Simple hash para obtener un índice consistente
+      let hash = 0;
+      for (let i = 0; i < nombreMateria.length; i++) {
+        hash = nombreMateria.charCodeAt(i) + ((hash << 5) - hash);
+      }
+      // Asegura que el índice esté dentro del rango de coloresMaterias
+      const index = Math.abs(hash) % this.coloresMaterias.length;
+      
+      const { bg, text } = this.coloresMaterias[index];
+      
+      return {
+        backgroundColor: bg,
+        color: text,
+        border: `2px solid ${bg}`, // Añade un borde del mismo color para realzar
+      };
+    },
     getDiaColumna(dia) {
       const index = this.cabeceras.indexOf(dia);
       return index !== -1 ? index + 1 : 2; // Default a Lunes si no encuentra

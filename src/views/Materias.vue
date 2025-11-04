@@ -228,6 +228,8 @@ export default {
 <style scoped>
 .input-group {
   display: flex;
+  padding-top: 10px;
+  padding-bottom: 10px;
   flex-direction: column;
 }
 
@@ -380,4 +382,13 @@ th, td {
   color: #721c24; /* Rojo oscuro */
   border: 1px solid #f5c6cb;
 }
+.modal-content {
+  min-width: 350px;
+  display: flex;
+  flex-direction: column;
+}
+.btn-guardar, .btn-cancelar {
+  margin-left: 15px;
+}
+
 </style>

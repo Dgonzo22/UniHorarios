@@ -26,7 +26,7 @@
         <label>Materia</label>
         <select v-model="materiaSeleccionada">
           <option disabled value="">Seleccionar</option>
-          <option v-for="m in materias" :key="m.ID_MATERIA" :value="m">{{ m.NOMBRE }}</option>
+          <option v-for="m in materias" :key="m.ID_MATERIA" :value="m">{{ m.NOMBRE }}  - NRC: {{  m.NRC }}</option>
         </select>
 
         <label>Docente</label>

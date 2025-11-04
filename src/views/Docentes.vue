@@ -13,6 +13,7 @@
           <th>ID Profesor</th>
           <th>Nombre</th>
           <th>Correo</th>
+          <th>Tipo Contrato</th>
           <th>Perfil</th>
           <th>Acciones</th>
         </tr>
@@ -22,6 +23,7 @@
           <td>{{ docente.ID_IDENTIFICACION }}</td>
           <td>{{ docente.NOMBRE }}</td>
           <td>{{ docente.CORREO }}</td>
+          <td>{{ docente.TIPO_CONTRATO }}</td>
           <td>{{ docente.PERFIL }}</td>
           <td>
             <button @click="openDialogEdit(docente)" class="btn-editar">
@@ -287,9 +289,8 @@ export default {
 
 <style scoped>
 .docentes-container {
-  max-width: 900px;
   margin: auto;
-  padding: 20px;
+  padding: 10px;
   font-family: Arial, sans-serif;
 }
 
@@ -380,7 +381,10 @@ button {
 .tabla-docentes td {
   border: 1px solid #d1d5db;
 }
-
+.btn-editar,  .btn-eliminar {
+  width: 100%;
+  margin-top: 5px;
+}
 .btn-editar {
   background: #ffc107;
   margin-right: 5px;
@@ -398,7 +402,9 @@ button {
 .btn-eliminar:hover {
   background: #c82333;
 }
-
+.btn-guardar, .btn-cancelar {
+  margin-left: 15px;
+}
 .btn-guardar {
   background: #007bff;
   color: white;
