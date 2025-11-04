@@ -275,21 +275,25 @@ export default {
         }
 
         const horariosExistentes = await window.electronAPI.invoke("getHorarios");
-        ///validacion de conflictos
+       // Validar conflictos antes de guardar
         for (const dia of this.diasSeleccionados) {
-          const conflicto = horariosExistentes.find(h =>
-            h.ID_HORARIO !== this.id_Horario && // excluir validacion del mismo horario
-            h.GRUPO === this.grupo &&          
-            h.DIA === dia &&                   
-            !(
-              this.horaFin <= h.HORA_INICIO || 
-              this.horaInicio >= h.HORA_FINAL  
-            )
+          const resultado = await window.electronAPI.invoke(
+            "validarConflictosHorario",
+            {
+              idDocente: this.docenteSeleccionado.ID_DOCENTE,
+              idMateria: this.materiaSeleccionada.ID_MATERIA,
+              semestre: this.semestre,
+              grupo: this.grupo,
+              dia: dia,
+              horaInicio: this.horaInicio,
+              horaFinal: this.horaFin,
+              periodo: this.periodo,
+            }
           );
 
-          if (conflicto) {
-            this.mostrarAlerta("error",`⚠️ Conflicto detectado: ya existe una clase el ${dia} de ${conflicto.HORA_INICIO} a ${conflicto.HORA_FINAL}`);
-            return; 
+          if (resultado.conflicto) {
+            this.mostrarAlerta("error",`⚠️ ${resultado.mensaje}`);
+            return;
           }
         }
 
