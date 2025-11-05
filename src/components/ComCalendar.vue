@@ -46,7 +46,7 @@
         @horarioEliminado="eliminarHorario"
         :style="{
           gridColumn: getDiaColumna(materia.DIA),
-          gridRow: calcularDuracion(materia.HORAINICIO, materia.HORAFINAL),
+          ...calcularDuracion(materia.HORAINICIO, materia.HORAFINAL),
           ...getMateriaColor(materia.NOMBRE),
         }"
       />
@@ -160,9 +160,9 @@ export default {
       }
       // Asegura que el índice esté dentro del rango de coloresMaterias
       const index = Math.abs(hash) % this.coloresMaterias.length;
-      
+
       const { bg, text } = this.coloresMaterias[index];
-      
+
       return {
         backgroundColor: bg,
         color: text,
@@ -174,12 +174,42 @@ export default {
       return index !== -1 ? index + 1 : 2; // Default a Lunes si no encuentra
     },
     calcularDuracion(horaInicio, horaFinal) {
-      const hIni = parseInt(horaInicio.split(":")[0]);
-      const hFin = parseInt(horaFinal.split(":")[0]);
-      const offset = 6; // porque empezamos a las 6am
-      const start = hIni - offset + 2; // +2 porque fila 1 son cabeceras, fila 2 = 6am
-      const end = hFin - offset + 2;
-      return `${start} / span ${end - start}`;
+      const offsetHora = 6; // la grilla empieza a las 6:00
+      const minutosPorFila = 60; // 60 minutos por fila
+      const filaBasePx = 60; // debe coincidir con grid-auto-rows: 60px
+
+      // Parsear hora:minuto
+      const [hIni, mIni] = horaInicio.split(":").map(Number);
+      const [hFin, mFin] = horaFinal.split(":").map(Number);
+
+      // Convertir a minutos desde las 00:00 y ajustar por offset (6:00)
+      const inicioTotalMin = hIni * 60 + mIni - offsetHora * 60;
+      const finTotalMin = hFin * 60 + mFin - offsetHora * 60;
+
+      // Si por alguna razón queda antes de la grilla, forzamos a 0
+      const inicioMin = Math.max(0, inicioTotalMin);
+      const finMin = Math.max(inicioMin, finTotalMin); // asegurar >= inicio
+
+      // Fila de inicio (número entero de fila en la grid, igual que +2 en tu diseño)
+      const filaInicio = Math.floor(inicioMin / minutosPorFila) + 2;
+
+      // Minutos desde el inicio de la fila (0..59)
+      const minutosEnFila = inicioMin % minutosPorFila;
+
+      // Duración en minutos
+      const duracionMin = finMin - inicioMin;
+
+      // Convertir a pixeles (coincide con grid-auto-rows)
+      const marginTopPx = (minutosEnFila / minutosPorFila) * filaBasePx;
+      const heightPx = ((duracionMin / minutosPorFila) * filaBasePx) - hIni;
+
+      return {
+        gridRow: `${filaInicio}`, // comenzamos en esa fila
+        height: `${Math.max(2, heightPx)}px`, // opcional: mínimo 2px para evitar 0
+        marginTop: `${marginTopPx}px`,
+        position: "relative",
+        alignSelf: "start",
+      };
     },
     async OHorarioModificado() {
       this.$emit("recargarHorarios");

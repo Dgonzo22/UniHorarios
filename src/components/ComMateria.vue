@@ -163,13 +163,14 @@ export default {
 <style scoped>
 .materia-card {
   height: 100%;
+  overflow: hidden;
 }
 
 .materia-card {
   background: linear-gradient(135deg, #3b82f6, #2563eb);
   color: white;
   border-radius: 10px;
-  padding: 10px;
+  padding: 5px;
   font-size: 13px;
   line-height: 1.4;
   text-align: left;

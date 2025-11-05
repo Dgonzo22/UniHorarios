@@ -263,7 +263,7 @@ function getHorariosJoinsMateriasDocentes() {
   });
 }
 
-function getHorarioFilter(SEMESTRE, GRUPO, CHECKPERIODO, PERIODO, CHECKDOCENTE, ID_DOCENTE, CHECKMATERIA, ID_MATERIA) {
+function getHorarioFilter(CHECKSEMESTRE,SEMESTRE,CHECKGRUPO, GRUPO, CHECKPERIODO, PERIODO, CHECKDOCENTE, ID_DOCENTE, CHECKMATERIA, ID_MATERIA) {
   return new Promise((resolve, reject) => {
     let query = `
       SELECT 
@@ -279,30 +279,35 @@ function getHorarioFilter(SEMESTRE, GRUPO, CHECKPERIODO, PERIODO, CHECKDOCENTE, 
       FROM HORARIOS
     `;
     let listData = [];
-    
-    //filtros obligatorios
-    query += " WHERE SEMESTRE = ?"; 
-    listData.push(SEMESTRE);
-    query += " AND GRUPO = ?";
-    listData.push(GRUPO);
-    
+    let conditions = [];
+
     //filtros opcionales
+    if(CHECKSEMESTRE){
+      conditions.push(" SEMESTRE = ?");
+      listData.push(SEMESTRE);
+    }
+    if(CHECKGRUPO){
+      conditions.push(" GRUPO = ?");
+      listData.push(GRUPO);
+    }
     if(CHECKPERIODO){
-      query += " AND PERIODO = ?";
+      conditions.push(" PERIODO = ?");
       listData.push(PERIODO);
     }
 
     if(CHECKDOCENTE){
-      query += " AND ID_DOCENTE = ?";
+      conditions.push(" ID_DOCENTE = ?");
       listData.push(ID_DOCENTE);
     }
 
     if (CHECKMATERIA) {
-      query += " AND ID_MATERIA = ?";
+      conditions.push(" ID_MATERIA = ?");
       listData.push(ID_MATERIA);
     }
-    console.log(query);
-    console.log(listData);
+    // Si hay condiciones, agrégalas con WHERE
+    if (conditions.length > 0) {
+      query += " WHERE " + conditions.join(" AND ");
+    }
     // Ejecutar la consulta
     db.all(query, listData, (err, rows) => {
       if (err) reject(err);

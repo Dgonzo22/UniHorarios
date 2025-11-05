@@ -6,22 +6,30 @@
       <div class="filtros-linea">
         <!-- Filtro Semestre -->
         <div class="filtro">
-          <label for="semestre">Semestre</label>
+          <label for="semestre">
+            <input type="checkbox" v-model="checkSemestre" />
+            Semestre
+          </label>
           <input
             id="semestre"
             type="number"
             v-model="semestre"
+            :disabled="!checkSemestre"
             placeholder="Semestre (1-10)"
           />
         </div>
 
         <!-- Filtro Grupo -->
         <div class="filtro">
-          <label for="grupo">Grupo</label>
+          <label>
+            <input type="checkbox" v-model="checkGrupo" />
+            Grupo
+          </label>
           <input
             id="grupo"
             type="text"
             v-model="grupo"
+            :disabled="!checkGrupo"
             placeholder="Grupo (A, B, C...)"
           />
         </div>
@@ -110,7 +118,9 @@ export default {
   data() {
     return {
       listaMaterias: [],
+      checkSemestre: false,
       semestre: "1",
+      checkGrupo: false,
       grupo: "grupo A",
       checkperiodo: false,
       periodo: null,
@@ -145,7 +155,9 @@ export default {
     async filtrar() {
       this.listaMaterias = await window.electronAPI.invoke(
         "getHorarioFilter",
+        this.checkSemestre,
         String(this.semestre),
+        this.checkGrupo,
         this.grupo,
         this.checkperiodo,
         this.periodo,
