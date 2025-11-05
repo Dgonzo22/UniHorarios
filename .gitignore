@@ -1,5 +1,7 @@
 ./src/data/*.db
 src/data/*.db
+/dist
+/build
 # Logs
 logs
 *.log

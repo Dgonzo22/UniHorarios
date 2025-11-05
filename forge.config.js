@@ -3,7 +3,9 @@ const { FuseV1Options, FuseVersion } = require('@electron/fuses');
 
 module.exports = {
   packagerConfig: {
-    asar: true,
+    // ESTO es la solución final: desactiva ASAR completamente
+    asar: false, 
+    rebuild: true
   },
   rebuildConfig: {},
   makers: [

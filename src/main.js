@@ -1,10 +1,25 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
 import path from 'node:path';
 import started from 'electron-squirrel-startup';
-import { ipcMain } from 'electron';
 import Events from './conectBD/events.js';
 import { createEvents } from "./conectBD/Events/ValidarConflictos.js";
+import { isPackaged } from 'electron-is-packaged'; 
 
+// === INICIO DEL PARCHE DE MÓDULO NATIVO FINAL ===
+if (isPackaged) {
+    // Ruta corregida: app.asar.unpacked se reemplaza por 'app'
+    const unpackedPath = path.join(
+        process.resourcesPath, 
+        'app', // <- ESTE ES EL CAMBIO CLAVE
+        'node_modules',
+        'sqlite3',
+        'build', 
+        'Release'
+    );
+    
+    // Agrega la ruta al inicio de las rutas de búsqueda de Node.js.
+    module.paths.unshift(unpackedPath);
+}
 
 app.whenReady().then(() => {
   createEvents(); // <-- registra todos los handlers
