@@ -4,11 +4,11 @@
 
     <!-- Modal para agregar/editar -->
     <ComDialog 
-      :visible="openNewMateria"
-      class="modal"
-      @closeDialog="openNewMateria = false"
-      title="📝 Nueva Materia"
-    >
+  :visible="openNewMateria"
+  class="modal"
+  @closeDialog="openNewMateria = false"
+  :title="editandoIndex === null ? '📝 Nueva Materia' : '✏️ Editar Materia'"
+  >
       <div class="modal-content">
         <div class="input-group">
           <label>Nombre de la materia:</label>
@@ -16,6 +16,7 @@
             type="text" 
             v-model="nuevaMateria.nombre" 
             placeholder="Nombre de la materia" 
+            maxlength="30"
             required 
           />
         </div>
@@ -26,7 +27,13 @@
             type="text" 
             v-model="nuevaMateria.nrc" 
             placeholder="NRC" 
-            required 
+            maxlength="5"
+            inputmode="numeric"
+            required
+            @input="nuevaMateria.nrc = nuevaMateria.nrc
+            .replace(/[^0-9]/g, '')     
+            .replace(/^0+/, '')           
+            .slice(0, 5)"           
           />
         </div>
 
