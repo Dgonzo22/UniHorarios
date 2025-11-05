@@ -4,20 +4,48 @@
       <div class="container">
         <!-- Menú lateral -->
         <aside class="menu">
-          <img src="/src/views/img/backgroundUNI.jpg" alt="Fondo Uniminuto" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;opacity:0.35;z-index:0;background-color: rgba(2, 7, 69, 0.5);">
-          <div style="position:relative;z-index:1;display:flex;flex-direction:column;height:100%;">
+          <img
+            src="/src/views/img/backgroundUNI.jpg"
+            alt="Fondo Uniminuto"
+            style="
+              position: absolute;
+              top: 0;
+              left: 0;
+              width: 100%;
+              height: 100%;
+              object-fit: cover;
+              opacity: 0.35;
+              z-index: 0;
+              background-color: rgba(2, 7, 69, 0.5);
+            "
+          />
+          <div
+            style="
+              position: relative;
+              z-index: 1;
+              display: flex;
+              flex-direction: column;
+              height: 100%;
+            "
+          >
             <h2>📌 Menú Principal</h2>
             <button @click="$router.push('/docentes')">👨‍🏫 Docentes</button>
-            <button @click="$router.push('/horarios')">📅 Carga De Horarios</button>
+            <button @click="$router.push('/horarios')">
+              📅 Carga De Horarios
+            </button>
             <button @click="$router.push('/Materias')">📝 Materias</button>
-            <button @click="$router.push('/ViewCalendario')">⌛ Vista De Horario</button>
+            <button @click="$router.push('/ViewCalendario')">
+              ⌛ Vista De Horario
+            </button>
             <hr />
-            <button class="btn-exit" @click="cerrarApp">❌ Salir del programa</button>
+            <button class="btn-exit" @click="cerrarApp">
+              ❌ Salir del programa
+            </button>
           </div>
         </aside>
 
         <!-- Vista dinámica -->
-        <main class="views">          
+        <main class="views">
           <router-view />
         </main>
       </div>
@@ -25,14 +53,59 @@
 
     <!-- Login -->
     <template v-else>
-      <div class="login-container">
-        <div class="login-card">
-          <h2>🔐 Iniciar Sesión</h2>
-          <input type="text" v-model="user" placeholder="Usuario" />
-          <input type="password" v-model="password" placeholder="Contraseña" />
-          <button @click="login">Ingresar</button>
+      <template v-if="existenUsuarios">
+        <div class="login-container">
+          <div class="login-card">
+            <h2>🔐 Iniciar Sesión</h2>
+            <input type="text" v-model="user" placeholder="Usuario" />
+            <input
+              type="password"
+              v-model="password"
+              placeholder="Contraseña"
+            />
+            <button @click="login">Ingresar</button>
+          </div>
         </div>
-      </div>
+      </template>
+      <template v-else>
+        <div class="login-container">
+          <div class="login-card">
+            <h2>🆕 Registro de Administrador</h2>
+            <p style="font-size: 0.9rem; color: #555; margin-bottom: 15px">
+              No existen usuarios registrados. Por favor, crea el primer
+              administrador del sistema.
+            </p>
+
+            <input
+              type="text"
+              v-model="nuevoUsuario.nombre"
+              placeholder="Nombre completo"
+            />
+            <input
+              type="text"
+              v-model="nuevoUsuario.apellido"
+              placeholder="Apellido"
+            />
+            <input
+              type="text"
+              v-model="nuevoUsuario.usuario"
+              placeholder="Nombre de usuario"
+            />
+            <input
+              type="password"
+              v-model="nuevoUsuario.password"
+              placeholder="Contraseña"
+            />
+            <input
+              type="password"
+              v-model="nuevoUsuario.confirmar"
+              placeholder="Confirmar contraseña"
+            />
+
+            <button @click="registrarUsuario">Registrar</button>
+          </div>
+        </div>
+      </template>
     </template>
   </div>
 </template>
@@ -41,40 +114,86 @@
 import { onMounted } from "vue";
 
 export default {
-  name: 'App',
+  name: "App",
   data() {
     return {
       isValid: false,
-      user: 'Admin',
-      password: '123'
+      user: "",
+      password: "",
+      existenUsuarios: false,
+      nuevoUsuario: {
+        nombre: "",
+        apellido: "",
+        usuario: "",
+        password: "",
+        confirmar: "",
+      },
     };
+  },
+  created() {
+    this.validarUsuarios();
   },
   methods: {
     async login() {
-      const result = await window.electronAPI.invoke("checkLogin", this.user, this.password);
+      const result = await window.electronAPI.invoke(
+        "checkLogin",
+        this.user,
+        this.password
+      );
       if (!result) {
         alert("Usuario o contraseña incorrectos");
       } else {
         this.isValid = true;
       }
     },
+    async registrarUsuario() {
+      if (
+        !this.nuevoUsuario.nombre ||
+        !this.nuevoUsuario.usuario ||
+        !this.nuevoUsuario.password ||
+        !this.nuevoUsuario.confirmar
+      ) {
+        alert("Por favor completa todos los campos.");
+        return;
+      }
+
+      if (this.nuevoUsuario.password !== this.nuevoUsuario.confirmar) {
+        alert("Las contraseñas no coinciden.");
+        return;
+      }
+
+      const resultado = await window.electronAPI.invoke("insertUsuario",
+        this.nuevoUsuario.usuario,
+        this.nuevoUsuario.password,
+        this.nuevoUsuario.nombre,
+        this.nuevoUsuario.apellido);
+
+      if (resultado) {
+        alert("Usuario registrado correctamente.");
+        this.existenUsuarios = true;
+      } else {
+        alert("Error al registrar el usuario.");
+      }
+    },
     cerrarApp() {
-      console.log('Cerrando la aplicación...');
       window.electronAPI.closeApp(); // Requiere exponer esto en preload.js
-    }
+    },
+    async validarUsuarios() {
+      const usuarios = await window.electronAPI.invoke("getUsuarios");
+      this.existenUsuarios = usuarios && usuarios.length > 0;
+    },
   },
   setup() {
     onMounted(() => {
-      document.querySelectorAll("input").forEach(input => {
+      document.querySelectorAll("input").forEach((input) => {
         input.setAttribute("autocomplete", "off");
         input.setAttribute("autocorrect", "off");
         input.setAttribute("autocapitalize", "off");
         input.setAttribute("spellcheck", "false");
       });
     });
-  }
-
-  };
+  },
+};
 </script>
 <style scoped>
 /* Contenedor principal */
@@ -83,8 +202,8 @@ export default {
   height: 100vh;
   min-height: 100vh;
   font-size: 15px;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: #FFFFFF;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: #ffffff;
   overflow: hidden;
 }
 
@@ -92,12 +211,12 @@ export default {
 .menu {
   width: 260px;
   position: relative;
-  color: #FFD200; 
+  color: #ffd200;
   padding: 25px 20px;
   display: flex;
   flex-direction: column;
   gap: 25px; /* Espaciado más amplio entre elementos */
-  box-shadow: 2px 0 10px rgba(0,0,0,0.2);
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
 }
 
 .menu h2 {
@@ -105,8 +224,13 @@ export default {
   font-size: 1.6rem;
   text-align: center;
   font-weight: 600;
-  color: #FFD200;
-  background: rgba(2, 7, 69, 0.7); /* Fondo azul institucional semitransparente solo para el título */
+  color: #ffd200;
+  background: rgba(
+    2,
+    7,
+    69,
+    0.7
+  ); /* Fondo azul institucional semitransparente solo para el título */
   border-radius: 10px;
   padding: 12px 0;
 }
@@ -127,15 +251,15 @@ export default {
 }
 
 .menu button:hover {
-  background: #FFD200; 
-  color: #002855;     
+  background: #ffd200;
+  color: #002855;
   transform: translateX(5px);
 }
 
 .menu div {
   display: flex;
   flex-direction: column;
-  gap: 22px; 
+  gap: 22px;
 }
 
 /* Área de contenido */
@@ -153,15 +277,18 @@ export default {
   align-items: center;
   justify-content: center;
   height: 100vh;
-  background: linear-gradient(135deg, #002855, #001B40);
+  background: linear-gradient(135deg, #002855, #001b40);
   position: center;
 }
 
 .login-container::before {
   content: "";
   position: absolute;
-  top: 0; left: 0; width: 100%; height: 100%;
-  background: url('/src/views/img/backgroundUNI.jpg') no-repeat center center;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url("/src/views/img/backgroundUNI.jpg") no-repeat center center;
   background-size: cover;
   opacity: 0.7;
   z-index: 0;
@@ -173,7 +300,7 @@ export default {
   background: #fff;
   padding: 40px 20px;
   border-radius: 15px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
   text-align: center;
   width: 320px;
   align-items: center;
@@ -197,7 +324,7 @@ export default {
 }
 
 .login-card input:focus {
-  border-color: #FFD200;
+  border-color: #ffd200;
   box-shadow: 0 0 6px rgba(255, 210, 0, 0.6);
 }
 
@@ -207,8 +334,8 @@ export default {
   margin-top: 15px;
   border-radius: 8px;
   border: none;
-  background: #FFD200;
-  color: #002855; 
+  background: #ffd200;
+  color: #002855;
   font-size: 1.1rem;
   font-weight: 600;
   cursor: pointer;
@@ -216,10 +343,10 @@ export default {
 }
 
 .login-card button:hover {
-  background: #002855; 
-  color: #FFD200; 
+  background: #002855;
+  color: #ffd200;
   transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 
 .btn-logout {
@@ -240,8 +367,5 @@ export default {
 
 .btn-exit:hover {
   background: #c0392b;
-
-
 }
 </style>
-

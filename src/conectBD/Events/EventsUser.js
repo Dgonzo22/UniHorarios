@@ -1,7 +1,7 @@
-import { ipcMain } from 'electron';
-import conectBD from '../conectBD.js';
+import { ipcMain } from "electron";
+import conectBD from "../conectBD.js";
 
-function createEvents(){
+function createEvents() {
   /// LOGIN ///
   ipcMain.handle("checkLogin", async (event, user, password) => {
     try {
@@ -12,35 +12,75 @@ function createEvents(){
       return null;
     }
   });
+  // ------------------- CRUD USUARIOS -------------------
 
-  /// crear usuarios defecto 
-  let listaUser = [
-    {
-      USER: "Admin",
-      PASSWORD: "123",
-      NAME: "Admin",
-      LASTNAME: "Admin"
-    }
-  ];
-
-  listaUser.forEach(async (u) => {
+  // Obtener todos los usuarios
+  ipcMain.handle("getUsuarios", async () => {
     try {
-      const existingUser = await conectBD.getUsuarioByUser(u.USER);
-
-      if (!existingUser) {
-        await conectBD.insertUsuario(u.USER, u.PASSWORD, u.NAME, u.LASTNAME);
-      } 
-      
+      return await conectBD.getUsuarios();
     } catch (err) {
       console.error(err);
+      return [];
+    }
+  });
+
+  // Obtener un usuario por USER
+  ipcMain.handle("getUsuarioByUser", async (event, user) => {
+    try {
+      return await conectBD.getUsuarioByUser(user);
+    } catch (err) {
+      console.error(err);
+      return null;
+    }
+  });
+
+  // Insertar nuevo usuario
+  ipcMain.handle(
+    "insertUsuario",
+    async (event, USER, PASSWORD, NAME, LASTNAME) => {
+      try {
+      
+        const result = await conectBD.insertUsuario(
+          USER, PASSWORD, NAME, LASTNAME
+        );
+        return result;
+      } catch (err) {
+        console.error(err);
+        return { error: err.message };
+      }
+    }
+  );
+
+  // Actualizar usuario existente
+  ipcMain.handle(
+    "updateUsuario",
+    async (event, user, password, name, lastname) => {
+      try {
+        const result = await conectBD.updateUsuario(
+          user,
+          password,
+          name,
+          lastname
+        );
+        return result;
+      } catch (err) {
+        console.error(err);
+        return { error: err.message };
+      }
+    }
+  );
+
+  // Eliminar usuario
+  ipcMain.handle("deleteUsuario", async (event, user) => {
+    try {
+      const result = await conectBD.deleteUsuario(user);
+      return result;
+    } catch (err) {
+      console.error(err);
+      return { error: err.message };
     }
   });
 
 }
 
-
-
-
-
-
-export default {createEvents};
+export default { createEvents };

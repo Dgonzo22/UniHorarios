@@ -25,13 +25,17 @@
             <input type="checkbox" v-model="checkGrupo" />
             Grupo
           </label>
-          <input
-            id="grupo"
-            type="text"
-            v-model="grupo"
-            :disabled="!checkGrupo"
-            placeholder="Grupo (A, B, C...)"
-          />
+
+          <select v-model="grupo" :disabled="!checkGrupo">
+            <option disabled value="">Seleccionar</option>
+            <option
+              v-for="g in ['A', 'B', 'C', 'D', 'E']"
+              :key="'grupo ' + g"
+              :value="'grupo ' + g"
+            >
+              {{ "grupo " + g }}
+            </option>
+          </select>
         </div>
 
         <!-- Filtro Periodo -->
@@ -56,7 +60,11 @@
           </label>
           <select v-model="id_docente" :disabled="!checkdocente">
             <option value="">Seleccione un docente</option>
-            <option v-for="docente in listaDocentes" :key="docente.ID_DOCENTE" :value="docente.ID_DOCENTE">
+            <option
+              v-for="docente in listaDocentes"
+              :key="docente.ID_DOCENTE"
+              :value="docente.ID_DOCENTE"
+            >
               {{ docente.NOMBRE }}
             </option>
           </select>
@@ -70,7 +78,11 @@
           </label>
           <select v-model="id_materia" :disabled="!checkmateria">
             <option value="">Seleccione una materia</option>
-            <option v-for="materia in listaMateriasDB" :key="materia.ID_MATERIA" :value="materia.ID_MATERIA">
+            <option
+              v-for="materia in listaMateriasDB"
+              :key="materia.ID_MATERIA"
+              :value="materia.ID_MATERIA"
+            >
               {{ materia.NOMBRE }}
             </option>
           </select>
@@ -84,10 +96,7 @@
     </div>
 
     <!-- Calendario -->
-    <ComCalendar 
-    :materias="listaMaterias"
-    @recargarHorarios="cargarHorarios"
-    />
+    <ComCalendar :materias="listaMaterias" @recargarHorarios="cargarHorarios" />
     <!-- Alerta de mensajes-->
     <ComDialog
       title=""
@@ -95,12 +104,12 @@
       :visible="openAlertaMensaje"
       @closeDialog="openAlertaMensaje = false"
     >
-      <template v-if="tipoAlerta=='error'">
+      <template v-if="tipoAlerta == 'error'">
         <div class="error">
-          {{ mensajeAlerta  }}
+          {{ mensajeAlerta }}
         </div>
       </template>
-      <template v-else-if="tipoAlerta == 'exito'"> 
+      <template v-else-if="tipoAlerta == 'exito'">
         <div class="exito">
           {{ mensajeAlerta }}
         </div>
@@ -110,11 +119,11 @@
 </template>
 
 <script>
-import ComCalendar from '../components/ComCalendar.vue'
+import ComCalendar from "../components/ComCalendar.vue";
 
 export default {
   components: { ComCalendar },
-  name: 'ViewCalendario',
+  name: "ViewCalendario",
   data() {
     return {
       listaMaterias: [],
@@ -134,12 +143,12 @@ export default {
       openAlertaMensaje: false,
       mensajeAlerta: "",
       tipoAlerta: "",
-    }
+    };
   },
   async created() {
     this.listaMaterias = await window.electronAPI.invoke("getHorarios");
 
-    this.listaMaterias.forEach(materia => {
+    this.listaMaterias.forEach((materia) => {
       console.log(materia);
     });
 
@@ -147,7 +156,7 @@ export default {
     this.listaMateriasDB = await window.electronAPI.invoke("getMaterias");
   },
   methods: {
-    mostrarAlerta (tipo, mensaje) {
+    mostrarAlerta(tipo, mensaje) {
       this.tipoAlerta = tipo;
       this.mensajeAlerta = mensaje;
       this.openAlertaMensaje = true;
@@ -168,10 +177,10 @@ export default {
       );
     },
     async cargarHorarios() {
-      this.listaMaterias = await window.electronAPI.invoke("getHorarios")
-    }
-  }
-}
+      this.listaMaterias = await window.electronAPI.invoke("getHorarios");
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -189,10 +198,14 @@ export default {
 
 /* --- TARJETA DE FILTROS MEJORADA --- */
 .filtros-card {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.98) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(248, 250, 252, 0.98) 100%
+  );
   padding: 28px 32px;
   border-radius: 24px;
-  box-shadow: 
+  box-shadow:
     0 8px 32px rgba(15, 23, 42, 0.12),
     0 2px 8px rgba(15, 23, 42, 0.06),
     inset 0 1px 0 rgba(255, 255, 255, 0.8);
@@ -204,7 +217,7 @@ export default {
 }
 
 .filtros-card::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -216,7 +229,7 @@ export default {
 
 .filtros-card:hover {
   transform: translateY(-4px) scale(1.002);
-  box-shadow: 
+  box-shadow:
     0 16px 40px rgba(15, 23, 42, 0.18),
     0 4px 12px rgba(15, 23, 42, 0.08),
     inset 0 1px 0 rgba(255, 255, 255, 0.9);
@@ -238,7 +251,7 @@ export default {
 }
 
 .filtros-card h1::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: 0;
   left: 0;
@@ -275,7 +288,7 @@ export default {
 }
 
 .filtro label::before {
-  content: '▶';
+  content: "▶";
   font-size: 10px;
   color: #3b82f6;
   opacity: 0.7;
@@ -298,7 +311,7 @@ export default {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   color: #1e293b;
   font-weight: 500;
-  box-shadow: 
+  box-shadow:
     0 2px 6px rgba(15, 23, 42, 0.04),
     inset 0 1px 2px rgba(255, 255, 255, 0.8);
 }
@@ -311,7 +324,7 @@ export default {
 .filtro input:focus,
 .filtro select:focus {
   border-color: #3b82f6;
-  box-shadow: 
+  box-shadow:
     0 0 0 4px rgba(59, 130, 246, 0.15),
     0 4px 12px rgba(59, 130, 246, 0.1),
     inset 0 1px 2px rgba(255, 255, 255, 0.9);
@@ -324,7 +337,7 @@ export default {
 .filtro select:hover {
   border-color: #cbd5e1;
   transform: translateY(-1px);
-  box-shadow: 
+  box-shadow:
     0 4px 12px rgba(15, 23, 42, 0.08),
     inset 0 1px 2px rgba(255, 255, 255, 0.9);
 }
@@ -350,26 +363,31 @@ export default {
   letter-spacing: 0.5px;
   position: relative;
   overflow: hidden;
-  box-shadow: 
+  box-shadow:
     0 6px 20px rgba(37, 99, 235, 0.3),
     0 2px 8px rgba(37, 99, 235, 0.2);
 }
 
 .acciones button::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
   transition: left 0.6s ease;
 }
 
 .acciones button:hover {
   background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 50%, #3b82f6 100%);
   transform: translateY(-3px) scale(1.02);
-  box-shadow: 
+  box-shadow:
     0 10px 30px rgba(37, 99, 235, 0.5),
     0 4px 15px rgba(37, 99, 235, 0.3);
   letter-spacing: 0.6px;
@@ -381,7 +399,7 @@ export default {
 
 .acciones button:active {
   transform: translateY(-1px) scale(1.01);
-  box-shadow: 
+  box-shadow:
     0 4px 15px rgba(37, 99, 235, 0.4),
     0 2px 6px rgba(37, 99, 235, 0.3);
 }
@@ -408,13 +426,13 @@ export default {
 
 /* --- ANIMACIONES MEJORADAS --- */
 @keyframes fadeIn {
-  from { 
-    opacity: 0; 
-    transform: translateY(20px) scale(0.98); 
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
   }
-  to { 
-    opacity: 1; 
-    transform: translateY(0) scale(1); 
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
 }
 
@@ -435,10 +453,18 @@ export default {
   opacity: 0;
 }
 
-.filtro:nth-child(1) { animation-delay: 0.1s; }
-.filtro:nth-child(2) { animation-delay: 0.2s; }
-.filtro:nth-child(3) { animation-delay: 0.3s; }
-.filtro:nth-child(4) { animation-delay: 0.4s; }
+.filtro:nth-child(1) {
+  animation-delay: 0.1s;
+}
+.filtro:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.filtro:nth-child(3) {
+  animation-delay: 0.3s;
+}
+.filtro:nth-child(4) {
+  animation-delay: 0.4s;
+}
 
 /* --- RESPONSIVE MEJORADO --- */
 @media (max-width: 768px) {
@@ -446,25 +472,25 @@ export default {
     padding: 16px;
     gap: 20px;
   }
-  
+
   .filtros-card {
     padding: 20px 24px;
     border-radius: 20px;
   }
-  
+
   .filtros-linea {
     grid-template-columns: 1fr;
     gap: 18px;
   }
-  
+
   .filtros-card h1 {
     font-size: 22px;
   }
-  
+
   .acciones {
     justify-content: stretch;
   }
-  
+
   .acciones button {
     width: 100%;
     padding: 16px 24px;
@@ -475,11 +501,11 @@ export default {
   .calendario-container {
     padding: 12px;
   }
-  
+
   .filtros-card {
     padding: 18px 20px;
   }
-  
+
   .filtro input[type="text"],
   .filtro input[type="number"],
   .filtro select {

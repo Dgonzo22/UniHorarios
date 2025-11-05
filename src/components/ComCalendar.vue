@@ -95,8 +95,7 @@ export default {
         "Miércoles",
         "Jueves",
         "Viernes",
-        "Sábado",
-        "Domingo",
+        "Sábado"
       ],
       horas: [
         "6:00 am",
@@ -140,7 +139,7 @@ export default {
       const celdas = [];
       // 16 horas + 1 fila de cabecera = 17 filas
       // 8 columnas (hora + 7 días)
-      for (let fila = 2; fila <= 17; fila++) {
+      for (let fila = 2; fila <= 16; fila++) {
         for (let columna = 2; columna <= 8; columna++) {
           celdas.push({ fila, columna });
         }
@@ -233,7 +232,7 @@ export default {
 
 .calendario-container {
   display: grid;
-  grid-template-columns: 120px repeat(7, 1fr);
+  grid-template-columns: 120px repeat(6, 1fr);
   grid-auto-rows: 60px;
   background: rgba(255, 255, 255, 0.95);
   border-radius: 20px;

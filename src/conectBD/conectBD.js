@@ -98,15 +98,38 @@ function getUsuarioByUser(user) {
     });
   });
 }
-function insertUsuario(user, password, name, lastname) {
+function insertUsuario(USER, PASSWORD, NAME, LASTNAME) {
   return new Promise((resolve, reject) => {
     const query = `
       INSERT INTO USUARIOS (USER, PASSWORD, NAME, LASTNAME)
       VALUES (?, ?, ?, ?)
     `;
-    db.run(query, [user, password, name, lastname], function (err) {
+    db.run(query, [USER, PASSWORD, NAME, LASTNAME], function (err) {
       if (err) reject(err);
       else resolve({ id: this.lastID });
+    });
+  });
+}
+function updateUsuario(user, password, name, lastname) {
+  return new Promise((resolve, reject) => {
+    const query = `
+      UPDATE USUARIOS 
+      SET PASSWORD = ?, NAME = ?, LASTNAME = ?
+      WHERE USER = ?
+    `;
+    db.run(query, [password, name, lastname, user], function (err) {
+      if (err) reject(err);
+      else resolve({ changes: this.changes });
+    });
+  });
+}
+
+function deleteUsuario(user) {
+  return new Promise((resolve, reject) => {
+    const query = "DELETE FROM USUARIOS WHERE USER = ?";
+    db.run(query, [user], function (err) {
+      if (err) reject(err);
+      else resolve({ changes: this.changes });
     });
   });
 }
@@ -440,6 +463,8 @@ export default {
   getUsuarios,
   getUsuarioByUser,
   insertUsuario,
+  updateUsuario,
+  deleteUsuario,
   //materias
   getMaterias,
   getMateriaById,
