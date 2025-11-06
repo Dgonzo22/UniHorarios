@@ -107,14 +107,34 @@
         </div>
       </template>
     </template>
+    <!-- Alerta de mensajes-->
+    <ComDialog
+      title=""
+      class="modal"
+      :visible="openAlertaMensaje"
+      @closeDialog="openAlertaMensaje = false"
+    >
+      <template v-if="tipoAlerta=='error'">
+        <div class="error">
+          {{ mensajeAlerta  }}
+        </div>
+      </template>
+      <template v-else-if="tipoAlerta == 'exito'"> 
+        <div class="exito">
+          {{ mensajeAlerta }}
+        </div>
+      </template>
+    </ComDialog>
   </div>
 </template>
 
 <script>
 import { onMounted } from "vue";
+import ComDialog from "./components/ComDialog.vue";
 
 export default {
   name: "App",
+  components: {ComDialog},
   data() {
     return {
       isValid: false,
@@ -128,12 +148,21 @@ export default {
         password: "",
         confirmar: "",
       },
+      //alerta mensaje
+      openAlertaMensaje: false,
+      mensajeAlerta: "",
+      tipoAlerta: "",
     };
   },
   created() {
     this.validarUsuarios();
   },
   methods: {
+    mostrarAlerta (tipo, mensaje) {
+      this.tipoAlerta = tipo;
+      this.mensajeAlerta = mensaje;
+      this.openAlertaMensaje = true;
+    },
     async login() {
       const result = await window.electronAPI.invoke(
         "checkLogin",
@@ -141,7 +170,8 @@ export default {
         this.password
       );
       if (!result) {
-        alert("Usuario o contraseña incorrectos");
+        this.mostrarAlerta("error","Usuario o contraseña incorrectos")
+
       } else {
         this.isValid = true;
       }
@@ -153,12 +183,12 @@ export default {
         !this.nuevoUsuario.password ||
         !this.nuevoUsuario.confirmar
       ) {
-        alert("Por favor completa todos los campos.");
+        this.mostrarAlerta("error","Por favor completa todos los campos.")
         return;
       }
 
       if (this.nuevoUsuario.password !== this.nuevoUsuario.confirmar) {
-        alert("Las contraseñas no coinciden.");
+        this.mostrarAlerta("error","Las contraseñas no coinciden.")
         return;
       }
 
@@ -169,10 +199,10 @@ export default {
         this.nuevoUsuario.apellido);
 
       if (resultado) {
-        alert("Usuario registrado correctamente.");
+        this.mostrarAlerta('exito', "usuario creado correctamente")
         this.existenUsuarios = true;
       } else {
-        alert("Error al registrar el usuario.");
+        this.mostrarAlerta("error", "Error al registrar el usuario.")
       }
     },
     cerrarApp() {
@@ -367,5 +397,26 @@ export default {
 
 .btn-exit:hover {
   background: #c0392b;
+}
+.exito, .error {
+  padding: 15px;
+  margin: 10px 0;
+  border-radius: 8px;
+  font-weight: bold;
+  text-align: center;
+  font-size: 1.1em;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  min-width: 400px;
+}
+.exito {
+  background-color: #d4edda; /* Verde claro */
+  color: #155724; /* Verde oscuro */
+  border: 1px solid #c3e6cb;
+}
+
+.error {
+  background-color: #f8d7da; /* Rojo claro/Rosado */
+  color: #721c24; /* Rojo oscuro */
+  border: 1px solid #f5c6cb;
 }
 </style>

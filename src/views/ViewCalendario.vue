@@ -120,9 +120,10 @@
 
 <script>
 import ComCalendar from "../components/ComCalendar.vue";
+import ComDialog from "../components/ComDialog.vue"
 
 export default {
-  components: { ComCalendar },
+  components: { ComCalendar, ComDialog },
   name: "ViewCalendario",
   data() {
     return {
