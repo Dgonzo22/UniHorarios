@@ -7,27 +7,9 @@
           <img
             src="/src/views/img/backgroundUNI.jpg"
             alt="Fondo Uniminuto"
-            style="
-              position: absolute;
-              top: 0;
-              left: 0;
-              width: 100%;
-              height: 100%;
-              object-fit: cover;
-              opacity: 0.35;
-              z-index: 0;
-              background-color: rgba(2, 7, 69, 0.5);
-            "
+            class="bg-img"
           />
-          <div
-            style="
-              position: relative;
-              z-index: 1;
-              display: flex;
-              flex-direction: column;
-              height: 100%;
-            "
-          >
+          <div class="divMenu">
             <h2>📌 Menú Principal</h2>
             <button @click="$router.push('/docentes')">👨‍🏫 Docentes</button>
             <button @click="$router.push('/horarios')">
@@ -114,12 +96,12 @@
       :visible="openAlertaMensaje"
       @closeDialog="openAlertaMensaje = false"
     >
-      <template v-if="tipoAlerta=='error'">
+      <template v-if="tipoAlerta == 'error'">
         <div class="error">
-          {{ mensajeAlerta  }}
+          {{ mensajeAlerta }}
         </div>
       </template>
-      <template v-else-if="tipoAlerta == 'exito'"> 
+      <template v-else-if="tipoAlerta == 'exito'">
         <div class="exito">
           {{ mensajeAlerta }}
         </div>
@@ -129,12 +111,11 @@
 </template>
 
 <script>
-import { onMounted } from "vue";
 import ComDialog from "./components/ComDialog.vue";
 
 export default {
   name: "App",
-  components: {ComDialog},
+  components: { ComDialog },
   data() {
     return {
       isValid: false,
@@ -158,7 +139,7 @@ export default {
     this.validarUsuarios();
   },
   methods: {
-    mostrarAlerta (tipo, mensaje) {
+    mostrarAlerta(tipo, mensaje) {
       this.tipoAlerta = tipo;
       this.mensajeAlerta = mensaje;
       this.openAlertaMensaje = true;
@@ -170,8 +151,7 @@ export default {
         this.password
       );
       if (!result) {
-        this.mostrarAlerta("error","Usuario o contraseña incorrectos")
-
+        this.mostrarAlerta("error", "Usuario o contraseña incorrectos");
       } else {
         this.isValid = true;
       }
@@ -183,26 +163,28 @@ export default {
         !this.nuevoUsuario.password ||
         !this.nuevoUsuario.confirmar
       ) {
-        this.mostrarAlerta("error","Por favor completa todos los campos.")
+        this.mostrarAlerta("error", "Por favor completa todos los campos.");
         return;
       }
 
       if (this.nuevoUsuario.password !== this.nuevoUsuario.confirmar) {
-        this.mostrarAlerta("error","Las contraseñas no coinciden.")
+        this.mostrarAlerta("error", "Las contraseñas no coinciden.");
         return;
       }
 
-      const resultado = await window.electronAPI.invoke("insertUsuario",
+      const resultado = await window.electronAPI.invoke(
+        "insertUsuario",
         this.nuevoUsuario.usuario,
         this.nuevoUsuario.password,
         this.nuevoUsuario.nombre,
-        this.nuevoUsuario.apellido);
+        this.nuevoUsuario.apellido
+      );
 
       if (resultado) {
-        this.mostrarAlerta('exito', "usuario creado correctamente")
+        this.mostrarAlerta("exito", "usuario creado correctamente");
         this.existenUsuarios = true;
       } else {
-        this.mostrarAlerta("error", "Error al registrar el usuario.")
+        this.mostrarAlerta("error", "Error al registrar el usuario.");
       }
     },
     cerrarApp() {
@@ -398,7 +380,26 @@ export default {
 .btn-exit:hover {
   background: #c0392b;
 }
-.exito, .error {
+.divMenu {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.bg-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.35;
+  z-index: 0;
+  background-color: rgba(2, 7, 69, 0.5);
+}
+.exito,
+.error {
   padding: 15px;
   margin: 10px 0;
   border-radius: 8px;
