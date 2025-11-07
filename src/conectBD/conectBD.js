@@ -272,15 +272,29 @@ function getHorarios() {
 
 function getHorariosJoinsMateriasDocentes() {
   return new Promise((resolve, reject) => {
-    db.all(`
-      SELECT H.ID_HORARIO, H.SEMESTRE, H.GRUPO, H.HORAINICIO, H.HORAFINAL, H.PERIODO, H.ANIO,
-             D.DIA, M.NOMBRE AS NOMBRE_MATERIA, DOC.NOMBRE AS NOMBRE_DOCENTE
+    const query = `
+      SELECT 
+        H.ID_HORARIO,
+        H.SEMESTRE,
+        H.GRUPO,
+        H.HORAINICIO,
+        H.HORAFINAL,
+        H.PERIODO,
+        H.DIA,
+        M.NOMBRE AS NOMBRE_MATERIA,
+        M.NRC AS NRC_MATERIA,
+        M.CREDITOS AS CREDITOS_MATERIA,
+        DOC.NOMBRE AS NOMBRE_DOCENTE,
+        DOC.CORREO AS CORREO_DOCENTE,
+        DOC.TIPO_CONTRATO AS TIPO_CONTRATO_DOCENTE
       FROM HORARIOS H
       LEFT JOIN MATERIAS M ON H.ID_MATERIA = M.ID_MATERIA
       LEFT JOIN DOCENTES DOC ON H.ID_DOCENTE = DOC.ID_DOCENTE
-      LEFT JOIN DIAS D ON H.ID_HORARIO = D.ID_HORARIO
-    `, [], (err, rows) => {
-      if(err) reject(err);
+      ORDER BY H.SEMESTRE, H.GRUPO, H.DIA, H.HORAINICIO
+    `;
+
+    db.all(query, [], (err, rows) => {
+      if (err) reject(err);
       else resolve(rows);
     });
   });

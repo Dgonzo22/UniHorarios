@@ -89,6 +89,11 @@
             </option>
           </select>
         </div>
+        <div class="flex justify-end mb-3">
+          <button @click="exportarExcel" class="btn-exportar">
+            📘 Exportar a Excel
+          </button>
+        </div>
 
         <!-- Botón para aplicar filtros -->
         <div class="acciones">
@@ -123,6 +128,7 @@
 <script>
 import ComCalendar from "../components/ComCalendar.vue";
 import ComDialog from "../components/ComDialog.vue";
+import * as XLSX from "xlsx";
 
 export default {
   components: { ComCalendar, ComDialog },
@@ -152,10 +158,6 @@ export default {
   async created() {
     this.listaMaterias = await window.electronAPI.invoke("getHorarios");
 
-    this.listaMaterias.forEach((materia) => {
-      console.log(materia);
-    });
-
     this.listaDocentes = await window.electronAPI.invoke("getDocentes");
     this.listaMateriasDB = await window.electronAPI.invoke("getMaterias");
 
@@ -169,6 +171,46 @@ export default {
     }
   },
   methods: {
+    async exportarExcel() {
+      try {
+        const datosDB = await window.electronAPI.invoke(
+          "getHorariosJoinsMateriasDocentes"
+        );
+
+        if (!Array.isArray(datosDB) || datosDB.length === 0) {
+          this.mostrarAlerta("error", "No hay datos para exportar.");
+          return;
+        }
+
+        const datos = datosDB.map((m) => ({
+          Materia: m.NOMBRE_MATERIA || "",
+          Docente: m.NOMBRE_DOCENTE || "",
+          Día: m.DIA || "",
+          "Hora Inicio": m.HORAINICIO || "",
+          "Hora Final": m.HORAFINAL || "",
+          Semestre: m.SEMESTRE || "",
+          Grupo: m.GRUPO || "",
+          Periodo: m.PERIODO || "",
+        }));
+
+        const wb = XLSX.utils.book_new();
+        const ws = XLSX.utils.json_to_sheet(datos);
+        XLSX.utils.book_append_sheet(wb, ws, "Horarios");
+
+        const nombreArchivo = `Horarios_${new Date().toISOString().slice(0, 10)}.xlsx`;
+        XLSX.writeFile(wb, nombreArchivo);
+
+        this.mostrarAlerta("exito", "Archivo Excel generado correctamente. ");
+      } catch (error) {
+        console.error("Error al generar el archivo Excel:", error);
+        this.mostrarAlerta(
+          "error",
+          "Error al generar el archivo Excel: " + error.message
+        );
+      } finally {
+        this.openAlertaMensaje = true;
+      }
+    },
     mostrarAlerta(tipo, mensaje) {
       this.tipoAlerta = tipo;
       this.mensajeAlerta = mensaje;
@@ -545,5 +587,20 @@ export default {
 .acciones button:disabled:hover {
   transform: none;
   box-shadow: none;
+}
+
+.btn-exportar {
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.2s ease;
+}
+
+.btn-exportar:hover {
+  background-color: #1d4ed8;
 }
 </style>

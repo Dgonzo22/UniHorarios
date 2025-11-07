@@ -33,7 +33,7 @@ function createEvents(){
   
   ipcMain.handle("getHorariosJoinsMateriasDocentes", async (event) => {
     try {
-      const result = await conectBD.getHorarios();
+      const result = await conectBD.getHorariosJoinsMateriasDocentes();
       return result;
     } catch (error) {
       console.log(error);
