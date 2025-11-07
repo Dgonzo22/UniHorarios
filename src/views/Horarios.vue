@@ -38,7 +38,12 @@
           </select>
 
           <label>Periodo</label>
-          <input type="text" v-model="periodo" />
+          <select v-model="periodo">
+            <option 
+              v-for="periodo in listaPeriodos"
+              :key="periodo"
+              :value="periodo"> {{ periodo }}</option>
+          </select>
         </div>
 
         <div class="box">
@@ -147,10 +152,11 @@ export default {
       periodo: "",
       diasSemana: ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"],
       diasSeleccionados: [],
+      listaPeriodos: [],
       //alerta
       openAlertaMensaje: false,
       mensajeAlerta: "",
-      tipoAlerta: "",
+      tipoAlerta: ""
     };
   },
   async created() {
@@ -162,6 +168,15 @@ export default {
 
     await this.cargarMaterias();
     await this.cargarDocentes();
+
+    let anioActual = new Date().getFullYear();
+
+    this.listaPeriodos = [];
+    for (let i = -2; i <= 8; i++) {
+      const year = anioActual - i;
+      this.listaPeriodos.push(year + "-1");
+      this.listaPeriodos.push(year + "-2");
+    }
   },
   methods: {
     mostrarAlerta (tipo, mensaje) {

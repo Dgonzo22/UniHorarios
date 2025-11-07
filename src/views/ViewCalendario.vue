@@ -38,18 +38,20 @@
           </select>
         </div>
 
-        <!-- Filtro Periodo -->
         <div class="filtro">
           <label>
             <input type="checkbox" v-model="checkperiodo" />
             Periodo
           </label>
-          <input
-            type="text"
-            v-model="periodo"
-            placeholder="Periodo (2025-1, 2025-2...)"
-            :disabled="!checkperiodo"
-          />
+          <select v-model="periodo" :disabled="!checkperiodo">
+            <option
+              v-for="periodo in listaPeriodos"
+              :key="periodo"
+              :value="periodo"
+            >
+              {{ periodo }}
+            </option>
+          </select>
         </div>
 
         <!-- Filtro Docente -->
@@ -120,7 +122,7 @@
 
 <script>
 import ComCalendar from "../components/ComCalendar.vue";
-import ComDialog from "../components/ComDialog.vue"
+import ComDialog from "../components/ComDialog.vue";
 
 export default {
   components: { ComCalendar, ComDialog },
@@ -140,6 +142,7 @@ export default {
       id_materia: null,
       listaDocentes: [],
       listaMateriasDB: [],
+      listaPeriodos: [],
       //alerta mensaje
       openAlertaMensaje: false,
       mensajeAlerta: "",
@@ -155,6 +158,15 @@ export default {
 
     this.listaDocentes = await window.electronAPI.invoke("getDocentes");
     this.listaMateriasDB = await window.electronAPI.invoke("getMaterias");
+
+    let anioActual = new Date().getFullYear();
+
+    this.listaPeriodos = [];
+    for (let i = -2; i <= 8; i++) {
+      const year = anioActual - i;
+      this.listaPeriodos.push(year + "-1");
+      this.listaPeriodos.push(year + "-2");
+    }
   },
   methods: {
     mostrarAlerta(tipo, mensaje) {
