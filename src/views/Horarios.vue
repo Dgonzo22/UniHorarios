@@ -348,7 +348,6 @@ export default {
           await window.electronAPI.invoke("insertDia", horarioGuardado.id, dia);
         }
         this.mostrarAlerta("exito","💾 Horario guardado correctamente.");
-        this.resetFormulario();
       } catch (err) {
         console.error(err);
         this.mostrarAlerta("error","❌ Error guardando el horario.");

@@ -21,21 +21,16 @@
           />
         </div>
 
-        <div class="input-group">
-          <label>NRC:</label>
-          <input 
-            type="text" 
-            v-model="nuevaMateria.nrc" 
-            placeholder="NRC" 
-            maxlength="5"
-            inputmode="numeric"
-            required
-            @input="nuevaMateria.nrc = nuevaMateria.nrc
-            .replace(/[^0-9]/g, '')     
-            .replace(/^0+/, '')           
-            .slice(0, 5)"           
-          />
-        </div>
+            <div class="input-group">
+              <label>Grupo:</label>
+              <select v-model="nuevaMateria.nrc" required>
+                <option value="" disabled>Seleccione el grupo</option>
+                <option value="A">A</option>
+                <option value="B">B</option>
+                <option value="C">C</option>
+              </select>
+            </div>
+
 
         <div class="input-group">
           <label>Número de créditos:</label>
@@ -71,7 +66,7 @@
         <thead>
           <tr>
             <th>Nombre</th>
-            <th>NRC</th>
+            <th>Grupo</th>
             <th>Créditos</th>
             <th>Acciones</th>
           </tr>

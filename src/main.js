@@ -45,7 +45,7 @@ const createWindow = () => {
       contextIsolation: true,
       nodeIntegration: true,
       contextIsolation: true,
-      devTools: true
+      devTools: false
     },
   });
   mainWindow.maximize(true)
