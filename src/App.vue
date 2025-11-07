@@ -104,7 +104,7 @@
       <template v-else-if="tipoAlerta == 'exito'">
         <div class="exito">
           {{ mensajeAlerta }}
-        </div>
+        </div>      
       </template>
     </ComDialog>
   </div>
@@ -112,6 +112,7 @@
 
 <script>
 import ComDialog from "./components/ComDialog.vue";
+import { onMounted } from "vue";
 
 export default {
   name: "App",

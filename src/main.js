@@ -45,7 +45,7 @@ const createWindow = () => {
       contextIsolation: true,
       nodeIntegration: true,
       contextIsolation: true,
-      devTools: false,
+      devTools: true
     },
   });
   mainWindow.maximize(true)
@@ -53,7 +53,18 @@ const createWindow = () => {
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
     mainWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL);
   } else {
-    mainWindow.loadFile(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`));
+    // 🚨 LA CORRECCIÓN 100% VERIFICADA POR ASAR
+    // Combina la raíz del app.asar (app.getAppPath()) con la ruta real dentro del asar.
+    
+    const finalPath = path.join(
+        app.getAppPath(),
+        '.vite',
+        'renderer', // 👈 ¡'renderer' ES la carpeta correcta!
+        MAIN_WINDOW_VITE_NAME, // que es 'main_window'
+        'index.html'
+    );
+    
+    mainWindow.loadFile(finalPath);
   }
 
   // Open the DevTools.

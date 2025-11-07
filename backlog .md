@@ -28,6 +28,6 @@
 
 
 
+cat vite.main.config.mjs && echo "-------------------------------" && cat vite.main.config.mjs.timestamp-1756525629282-e67889aa5fb5f.mjs && cat vite.preload.config.mjs && echo "-------------------------------" && cat vite.renderer.config.mjs
 
-
-
+cat package.json && rm -r dist/ && npm start && npm run build && npm run dist && dist/win-unpacked/unihorarios.exe
