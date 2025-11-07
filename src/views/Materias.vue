@@ -228,6 +228,7 @@ export default {
 
 
 <style scoped>
+
 .input-group {
   display: flex;
   padding-top: 10px;
@@ -391,6 +392,56 @@ th, td {
 }
 .btn-guardar, .btn-cancelar {
   margin-left: 15px;
+}
+/* === Estilo moderno para el desplegable (select) === */
+select {
+  width: 100%;
+  padding: 10px 14px;
+  border: 2px solid #002855; /* Azul institucional */
+  border-radius: 8px;
+  background-color: #ffffff;
+  color: #002855;
+  font-size: 1rem;
+  font-weight: 500;
+  appearance: none; /* Quita la flecha por defecto */
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+/* Flecha personalizada ▼ */
+select::after {
+  content: "▼";
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #002855;
+  pointer-events: none;
+}
+
+/* Hover y focus con efectos suaves */
+select:hover {
+  border-color: #004aad;
+  box-shadow: 0 0 6px rgba(0, 42, 90, 0.3);
+}
+
+select:focus {
+  outline: none;
+  border-color: #FFD200; /* Amarillo institucional */
+  box-shadow: 0 0 6px rgba(255, 210, 0, 0.5);
+}
+
+/* Estilo de las opciones internas */
+option {
+  background-color: #ffffff;
+  color: #002855;
+  font-weight: 500;
+}
+
+/* Cuando el valor es inválido (placeholder) */
+option[disabled] {
+  color: #999999;
 }
 
 </style>
