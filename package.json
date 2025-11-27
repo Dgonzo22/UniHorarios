@@ -11,7 +11,10 @@
     "make": "electron-forge make",
     "publish": "electron-forge publish",
     "lint": "echo \"No linting configured\"",
-    "dist": "electron-builder"
+    "dist": "electron-builder",
+    "test": "cypress open",
+    "cypress": "cypress open",
+    "dev": "vite"
   },
   "keywords": [],
   "author": {
@@ -48,6 +51,7 @@
     "@electron/fuses": "^1.8.0",
     "@rollup/plugin-babel": "^6.1.0",
     "@vitejs/plugin-vue": "^5.2.4",
+    "cypress": "^15.7.0",
     "electron": "37.4.0",
     "electron-builder": "^26.0.12",
     "vite": "^5.0.0"

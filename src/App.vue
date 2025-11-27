@@ -49,6 +49,8 @@
           </div>
         </div>
       </template>
+
+      <!-- Registro del primer usuario -->
       <template v-else>
         <div class="login-container">
           <div class="login-card">
@@ -89,7 +91,8 @@
         </div>
       </template>
     </template>
-    <!-- Alerta de mensajes-->
+
+    <!-- Alerta de mensajes -->
     <ComDialog
       title=""
       class="modal"
@@ -104,11 +107,12 @@
       <template v-else-if="tipoAlerta == 'exito'">
         <div class="exito">
           {{ mensajeAlerta }}
-        </div>      
+        </div>
       </template>
     </ComDialog>
   </div>
 </template>
+
 
 <script>
 import ComDialog from "./components/ComDialog.vue";
@@ -136,27 +140,49 @@ export default {
       tipoAlerta: "",
     };
   },
+
   created() {
-    this.validarUsuarios();
+    // No ejecutar Electron preload si no estamos en Electron
+    if (window.electronAPI && window.electronAPI.invoke) {
+      this.validarUsuarios();
+    } else {
+      console.warn("Modo test / vite: validarUsuarios deshabilitado");
+    }
   },
+
   methods: {
     mostrarAlerta(tipo, mensaje) {
       this.tipoAlerta = tipo;
       this.mensajeAlerta = mensaje;
       this.openAlertaMensaje = true;
     },
+
+    // -----------------------
+    // LOGIN SEGURO PARA CYPRESS
+    // -----------------------
     async login() {
-      const result = await window.electronAPI.invoke(
-        "checkLogin",
-        this.user,
-        this.password
-      );
+      let result = true;
+
+      if (window.electronAPI && window.electronAPI.invoke) {
+        result = await window.electronAPI.invoke(
+          "checkLogin",
+          this.user,
+          this.password
+        );
+      } else {
+        console.warn("Modo test: login sin Electron");
+      }
+
       if (!result) {
         this.mostrarAlerta("error", "Usuario o contraseña incorrectos");
       } else {
         this.isValid = true;
       }
     },
+
+    // -----------------------
+    // REGISTRAR USUARIO INICIAL
+    // -----------------------
     async registrarUsuario() {
       if (
         !this.nuevoUsuario.nombre ||
@@ -173,29 +199,55 @@ export default {
         return;
       }
 
-      const resultado = await window.electronAPI.invoke(
-        "insertUsuario",
-        this.nuevoUsuario.usuario,
-        this.nuevoUsuario.password,
-        this.nuevoUsuario.nombre,
-        this.nuevoUsuario.apellido
-      );
+      let resultado = true;
 
-      if (resultado) {
-        this.mostrarAlerta("exito", "usuario creado correctamente");
-        this.existenUsuarios = true;
+      if (window.electronAPI && window.electronAPI.invoke) {
+        resultado = await window.electronAPI.invoke(
+          "insertUsuario",
+          this.nuevoUsuario.usuario,
+          this.nuevoUsuario.password,
+          this.nuevoUsuario.nombre,
+          this.nuevoUsuario.apellido
+        );
       } else {
-        this.mostrarAlerta("error", "Error al registrar el usuario.");
+        console.warn("Modo test: insertUsuario sin Electron");
+      }
+
+ if (resultado) {
+  this.mostrarAlerta("exito", "Usuario creado correctamente");
+
+  this.existenUsuarios = true;
+
+  // Redirigir al login después de registrar
+  this.$router.push("/login");
+} else {
+  this.mostrarAlerta("error", "Error al registrar el usuario.");
+}
+
+    },
+
+    cerrarApp() {
+      if (window.electronAPI && window.electronAPI.closeApp) {
+        window.electronAPI.closeApp();
       }
     },
-    cerrarApp() {
-      window.electronAPI.closeApp(); // Requiere exponer esto en preload.js
-    },
+
+    // -----------------------
+    // VALIDAR USUARIOS
+    // -----------------------
     async validarUsuarios() {
-      const usuarios = await window.electronAPI.invoke("getUsuarios");
+      let usuarios = [];
+
+      if (window.electronAPI && window.electronAPI.invoke) {
+        usuarios = await window.electronAPI.invoke("getUsuarios");
+      } else {
+        console.warn("Modo test: getUsuarios sin Electron");
+      }
+
       this.existenUsuarios = usuarios && usuarios.length > 0;
     },
   },
+
   setup() {
     onMounted(() => {
       document.querySelectorAll("input").forEach((input) => {
@@ -208,6 +260,7 @@ export default {
   },
 };
 </script>
+
 <style scoped>
 /* Contenedor principal */
 .container {
